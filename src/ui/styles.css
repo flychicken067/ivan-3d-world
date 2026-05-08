@@ -587,6 +587,28 @@ canvas#world-canvas {
   transform: translateY(-50%);
 }
 
+/* --- Touch Joystick --- */
+#touch-joystick {
+  position: fixed; bottom: 100px; left: 40px;
+  width: 80px; height: 80px; border-radius: 50%;
+  border: 1px solid var(--border-strong);
+  background: rgba(13, 26, 13, 0.6);
+  display: none; align-items: center; justify-content: center;
+  z-index: 20;
+  pointer-events: auto;
+}
+.joystick-knob {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(184, 200, 160, 0.3);
+  border: 1px solid var(--accent-green);
+  transition: transform 0.05s;
+}
+@media (pointer: coarse) {
+  #touch-joystick { display: flex; }
+  .minimap { bottom: 200px; }
+  .crosshair { display: none; }
+}
+
 /* --- Scrollbar Styling --- */
 ::-webkit-scrollbar {
   width: 4px;

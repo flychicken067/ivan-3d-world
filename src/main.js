@@ -3,11 +3,11 @@ import * as TWEEN from '@tweenjs/tween.js';
 import { COLORS, CAMERA } from './config.js';
 import { createSky } from './world/sky.js';
 import { createTerrain } from './world/terrain.js';
-import { createVegetation } from './world/vegetation.js';
+import { createVegetationInstanced } from './world/vegetation.js';
 import { createPaths } from './world/paths.js';
 import { createZones, getInteractiveMeshes } from './world/zones.js';
 import { initCameraControls } from './controls/camera.js';
-import { initMovement, updateMovement } from './controls/movement.js';
+import { initMovement, updateMovement, initTouchControls } from './controls/movement.js';
 import { setInteractiveMeshes, initRaycaster } from './utils/raycaster.js';
 import { updateHud, getCurrentZone } from './ui/hud.js';
 import { initMinimap, updateMinimap } from './ui/minimap.js';
@@ -37,7 +37,7 @@ scene.add(directional);
 // World
 createSky(scene);
 createTerrain(scene);
-createVegetation(scene);
+createVegetationInstanced(scene);
 createPaths(scene);
 const zoneGroups = createZones(scene);
 const interactiveMeshes = getInteractiveMeshes(zoneGroups);
@@ -45,6 +45,7 @@ const interactiveMeshes = getInteractiveMeshes(zoneGroups);
 // Controls
 initCameraControls(camera, document.body);
 initMovement();
+initTouchControls();
 
 // Raycaster (Task 9)
 setInteractiveMeshes(interactiveMeshes);

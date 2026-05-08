@@ -40,6 +40,63 @@ function isNearZone(x, z, minDist = 12) {
   return false;
 }
 
+export function createVegetationInstanced(scene) {
+  const halfSize = WORLD.size / 2 - 10;
+  const positions = [];
+  let attempts = 0;
+  const maxAttempts = WORLD.treeCount * 20;
+
+  while (positions.length < WORLD.treeCount && attempts < maxAttempts) {
+    attempts++;
+    const x = (Math.random() - 0.5) * halfSize * 2;
+    const z = (Math.random() - 0.5) * halfSize * 2;
+    if (isNearZone(x, z, 12)) continue;
+    const height = 2.5 + Math.random() * 2.0;
+    const scale = 0.8 + Math.random() * 0.4;
+    const rotY = Math.random() * Math.PI * 2;
+    positions.push({ x, z, height, scale, rotY });
+  }
+
+  const count = positions.length;
+  const dummy = new THREE.Object3D();
+
+  // Trunk InstancedMesh
+  const trunkGeo = new THREE.CylinderGeometry(0.15, 0.25, 1.2, 5);
+  const trunkMat = new THREE.MeshLambertMaterial({ color: 0x8B5E3C, flatShading: true });
+  const trunkMesh = new THREE.InstancedMesh(trunkGeo, trunkMat, count);
+  trunkMesh.castShadow = true;
+
+  // Foliage InstancedMesh
+  const foliageGeo = new THREE.ConeGeometry(1.2, 2.5, 6);
+  const foliageMat = new THREE.MeshLambertMaterial({ color: 0x4a8c4a, flatShading: true });
+  const foliageMesh = new THREE.InstancedMesh(foliageGeo, foliageMat, count);
+  foliageMesh.castShadow = true;
+
+  positions.forEach(({ x, z, height, scale, rotY }, i) => {
+    // Trunk
+    dummy.position.set(x, height * 0.175 * scale, z);
+    dummy.rotation.set(0, rotY, 0);
+    dummy.scale.setScalar(scale);
+    dummy.updateMatrix();
+    trunkMesh.setMatrixAt(i, dummy.matrix);
+
+    // Foliage (cone centered at trunk top + half cone height)
+    const trunkTop = height * 0.35 * scale;
+    const foliageHalfH = 2.5 * scale / 2;
+    dummy.position.set(x, trunkTop + foliageHalfH, z);
+    dummy.rotation.set(0, rotY, 0);
+    dummy.scale.setScalar(scale);
+    dummy.updateMatrix();
+    foliageMesh.setMatrixAt(i, dummy.matrix);
+  });
+
+  trunkMesh.instanceMatrix.needsUpdate = true;
+  foliageMesh.instanceMatrix.needsUpdate = true;
+
+  scene.add(trunkMesh);
+  scene.add(foliageMesh);
+}
+
 export function createVegetation(scene) {
   const halfSize = WORLD.size / 2 - 10;
   let placed = 0;

@@ -35,6 +35,39 @@ export function initCameraControls(camera, domElement) {
     events.emit('controls:unlocked');
   });
 
+  // Touch swipe camera look (mobile only)
+  if ('ontouchstart' in window) {
+    let lastTouchX = 0;
+    let lastTouchY = 0;
+    const LOOK_SENSITIVITY = 0.003;
+
+    domElement.addEventListener('touchstart', (e) => {
+      const t = e.changedTouches[0];
+      // Only track right half of screen (clientX > 40% width)
+      if (t.clientX > window.innerWidth * 0.4) {
+        lastTouchX = t.clientX;
+        lastTouchY = t.clientY;
+      }
+    }, { passive: true });
+
+    domElement.addEventListener('touchmove', (e) => {
+      const t = e.changedTouches[0];
+      if (t.clientX <= window.innerWidth * 0.4) return;
+
+      const dx = t.clientX - lastTouchX;
+      const dy = t.clientY - lastTouchY;
+      lastTouchX = t.clientX;
+      lastTouchY = t.clientY;
+
+      // Rotate camera
+      camera.rotation.order = 'YXZ';
+      camera.rotation.y -= dx * LOOK_SENSITIVITY;
+      camera.rotation.x -= dy * LOOK_SENSITIVITY;
+      // Clamp X rotation to ±PI/3
+      camera.rotation.x = Math.max(-Math.PI / 3, Math.min(Math.PI / 3, camera.rotation.x));
+    }, { passive: true });
+  }
+
   return controls;
 }
 
