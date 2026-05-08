@@ -1,6 +1,18 @@
 import * as THREE from 'three';
 import { ZONES } from '../config.js';
 
+// ─── Zone accent palette — each zone gets a distinct primary color ────────────
+// Cohesive Editorial Green family, each shifted to convey zone identity
+const ZONE_ACCENT = {
+  WELCOME:     0x4a6a3a,  // forest green — home base
+  PROJECTS:    0x6a4a2a,  // warm terracotta — building/craft
+  SOULPRINT:   0x8a7438,  // antique gold — ancient wisdom
+  THEATER:     0x4a3a6a,  // deep purple — stage/performance
+  LIBRARY:     0x6a3838,  // burgundy — books/depth
+  SOCIAL:      0x2a5c7a,  // teal — connection/water
+  COLLABORATE: 0x7a3838,  // crimson — energy/action
+};
+
 // ─── Material helpers ─────────────────────────────────────────────────────────
 function mat(color, flat = true) {
   return new THREE.MeshLambertMaterial({ color, flatShading: flat });
@@ -12,8 +24,8 @@ function mat(color, flat = true) {
 function buildWelcome(zone) {
   const group = new THREE.Group();
 
-  // Sign face
-  const sign = new THREE.Mesh(new THREE.BoxGeometry(4, 3, 0.5), mat(0x2d4a2d));
+  // Sign face — forest green (home base)
+  const sign = new THREE.Mesh(new THREE.BoxGeometry(4, 3, 0.5), mat(ZONE_ACCENT.WELCOME));
   sign.position.set(0, 3.5, 0);
   sign.userData = { zoneCode: zone.code, zoneName: zone.name, interactive: true };
   sign.castShadow = true;
@@ -36,7 +48,7 @@ function buildProjects(zone) {
 
   const offsets = [-4, 0, 4];
   offsets.forEach((x, i) => {
-    const board = new THREE.Mesh(new THREE.BoxGeometry(3, 2, 0.3), mat(0x1e3a1e));
+    const board = new THREE.Mesh(new THREE.BoxGeometry(3, 2, 0.3), mat(ZONE_ACCENT.PROJECTS));
     board.position.set(x, 3, 0);
     board.rotation.y = (i - 1) * 0.3;
     board.userData = { zoneCode: zone.code, zoneName: zone.name, interactive: true };
@@ -64,8 +76,8 @@ function buildSoulprint(zone) {
     group.add(pillar);
   });
 
-  // Cone roof
-  const roof = new THREE.Mesh(new THREE.ConeGeometry(3.5, 2, 8), mat(0x8c7a5e));
+  // Cone roof — antique gold (ancient wisdom)
+  const roof = new THREE.Mesh(new THREE.ConeGeometry(3.5, 2, 8), mat(ZONE_ACCENT.SOULPRINT));
   roof.position.set(0, 5.2, 0);
   roof.userData = { zoneCode: zone.code, zoneName: zone.name, interactive: true };
   roof.castShadow = true;
@@ -84,8 +96,8 @@ function buildSoulprint(zone) {
 function buildTheater(zone) {
   const group = new THREE.Group();
 
-  // Tent
-  const tent = new THREE.Mesh(new THREE.ConeGeometry(3, 4, 7), mat(0x4a3a6a));
+  // Tent — deep purple (stage)
+  const tent = new THREE.Mesh(new THREE.ConeGeometry(3, 4, 7), mat(ZONE_ACCENT.THEATER));
   tent.position.set(-3, 2, 0);
   tent.userData = { zoneCode: zone.code, zoneName: zone.name, interactive: true };
   tent.castShadow = true;
@@ -112,8 +124,8 @@ function buildTheater(zone) {
 function buildLibrary(zone) {
   const group = new THREE.Group();
 
-  // Main shelf unit
-  const shelf = new THREE.Mesh(new THREE.BoxGeometry(5, 3, 1), mat(0x8B5E3C));
+  // Main shelf unit — burgundy (depth/books)
+  const shelf = new THREE.Mesh(new THREE.BoxGeometry(5, 3, 1), mat(ZONE_ACCENT.LIBRARY));
   shelf.position.set(0, 1.5, 0);
   shelf.userData = { zoneCode: zone.code, zoneName: zone.name, interactive: true };
   shelf.castShadow = true;
@@ -143,8 +155,8 @@ function buildLibrary(zone) {
 function buildSocial(zone) {
   const group = new THREE.Group();
 
-  // Central pole
-  const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 5, 8), mat(0x8B5E3C));
+  // Central pole — teal accent (connection/water)
+  const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 5, 8), mat(ZONE_ACCENT.SOCIAL));
   pole.position.set(0, 2.5, 0);
   pole.castShadow = true;
   group.add(pole);
@@ -158,7 +170,7 @@ function buildSocial(zone) {
   ];
 
   directions.forEach(({ x, z, y, rot }) => {
-    const sign = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.5, 0.2), mat(0x2d5c8a));
+    const sign = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.5, 0.2), mat(ZONE_ACCENT.SOCIAL));
     sign.position.set(x, y, z);
     sign.rotation.y = rot;
     sign.userData = { zoneCode: zone.code, zoneName: zone.name, interactive: true };
@@ -173,8 +185,8 @@ function buildSocial(zone) {
 function buildHire(zone) {
   const group = new THREE.Group();
 
-  // Counter
-  const counter = new THREE.Mesh(new THREE.BoxGeometry(4, 1.2, 1.5), mat(0x3a3a5c));
+  // Counter — crimson (collaborate energy)
+  const counter = new THREE.Mesh(new THREE.BoxGeometry(4, 1.2, 1.5), mat(ZONE_ACCENT.COLLABORATE));
   counter.position.set(0, 0.6, 0);
   counter.userData = { zoneCode: zone.code, zoneName: zone.name, interactive: true };
   counter.castShadow = true;
@@ -193,8 +205,8 @@ function buildHire(zone) {
     group.add(post);
   });
 
-  // Overhead sign
-  const overSign = new THREE.Mesh(new THREE.BoxGeometry(4, 1, 0.2), mat(0x7a2020));
+  // Overhead sign — deeper crimson
+  const overSign = new THREE.Mesh(new THREE.BoxGeometry(4, 1, 0.2), mat(0x5c2a2a));
   overSign.position.set(0, 3.8, -0.5);
   overSign.userData = { zoneCode: zone.code, zoneName: zone.name, interactive: true };
   overSign.castShadow = true;

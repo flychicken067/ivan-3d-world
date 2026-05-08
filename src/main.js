@@ -10,7 +10,7 @@ import { createAtmosphere, updateAtmosphere } from './world/atmosphere.js';
 import { initPostProcessing } from './postprocessing.js';
 import { initCameraControls } from './controls/camera.js';
 import { initMovement, updateMovement, initTouchControls } from './controls/movement.js';
-import { setInteractiveMeshes, initRaycaster } from './utils/raycaster.js';
+import { setInteractiveMeshes, initRaycaster, updateHover } from './utils/raycaster.js';
 import { updateHud, getCurrentZone } from './ui/hud.js';
 import { initMinimap, updateMinimap } from './ui/minimap.js';
 import { initOverlay } from './ui/overlay.js';
@@ -19,6 +19,11 @@ import { initTutorial } from './ui/tutorial.js';
 import { initAudio, playZoneEnter } from './audio.js';
 import { events } from './events.js';
 import './tour.js';
+import './ui/zone-splash.js';
+import { setComposer, update as perfUpdate, usePostFx } from './perf.js';
+import { initLoader } from './ui/loader.js';
+import { initCompass, updateCompass } from './ui/compass.js';
+import { initEasterEggs } from './easter-eggs.js';
 
 const canvas = document.getElementById('world-canvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -54,6 +59,7 @@ createAtmosphere(scene);
 
 // Post-processing pipeline (bloom, tone mapping, vignette)
 const composer = initPostProcessing(renderer, scene, camera);
+setComposer(composer);
 
 // Controls
 initCameraControls(camera, document.body);
@@ -75,6 +81,11 @@ initNav();
 
 // Tutorial overlay (Task 14)
 initTutorial();
+
+// Loader, compass, easter eggs
+initLoader();
+initCompass();
+initEasterEggs();
 
 // Audio — init on first user click (browser autoplay policy)
 document.addEventListener('click', function startAudio() {
@@ -115,7 +126,20 @@ function animate() {
   updateZones(zoneGroups, elapsed);
   updateAtmosphere(elapsed);
 
-  composer.render();
+  // Hover detection on interactive meshes (center crosshair raycast)
+  updateHover(camera);
+
+  // Compass needle update
+  updateCompass(camera);
+
+  // FPS-adaptive quality
+  perfUpdate();
+
+  if (usePostFx) {
+    composer.render();
+  } else {
+    renderer.render(scene, camera);
+  }
 }
 animate();
 

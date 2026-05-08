@@ -8,6 +8,13 @@
 </head>
 <body>
   <canvas id="world-canvas"></canvas>
+  <div id="world-loader" class="world-loader">
+    <div class="loader-content">
+      <div class="loader-title">IVAN'S WORLD</div>
+      <div class="loader-bar"><div class="loader-fill"></div></div>
+      <div class="loader-label">Initializing world</div>
+    </div>
+  </div>
   <div id="ui-layer">
     <div id="hud-zone" class="hud" aria-live="polite"></div>
     <div id="minimap" class="minimap"></div>
@@ -17,10 +24,27 @@
     <div id="tour-narration" class="tour-narration hidden">
       <div class="tour-progress"><span class="tour-step">1/7</span> &middot; <span class="tour-zone-name">WELCOME</span></div>
       <div class="tour-text"></div>
-      <button class="tour-stop">STOP TOUR</button>
+      <div class="tour-buttons">
+        <button class="tour-stop">STOP</button>
+        <button class="tour-skip">NEXT &rsaquo;</button>
+      </div>
     </div>
     <div class="crosshair"></div>
+    <div id="zone-splash" class="zone-splash hidden">
+      <div class="zone-splash-code"></div>
+      <div class="zone-splash-name"></div>
+    </div>
     <button id="audio-toggle" class="audio-toggle">SOUND ON</button>
+    <div id="compass" class="compass" aria-hidden="true">
+      <div class="compass-ring">
+        <div class="compass-needle">
+          <span class="compass-n">N</span>
+          <span class="compass-e">E</span>
+          <span class="compass-s">S</span>
+          <span class="compass-w">W</span>
+        </div>
+      </div>
+    </div>
   </div>
   <div id="start-screen" class="start-screen">
     <div class="start-content">

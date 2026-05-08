@@ -22,6 +22,8 @@ let progressEl = null;
 let zoneNameEl = null;
 let textEl = null;
 let stopBtn = null;
+let skipBtn = null;
+let skipResolve = null; // resolves the wait() promise early
 let escListener = null;
 let canvasListener = null;
 
@@ -33,11 +35,30 @@ function ensureDom() {
   zoneNameEl = narrationEl.querySelector('.tour-zone-name');
   textEl = narrationEl.querySelector('.tour-text');
   stopBtn = narrationEl.querySelector('.tour-stop');
+  skipBtn = narrationEl.querySelector('.tour-skip');
   if (stopBtn) {
     stopBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       stopTour();
     });
+  }
+  if (skipBtn) {
+    skipBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      skipToNext();
+    });
+  }
+}
+
+function skipToNext() {
+  if (currentTimeout) {
+    clearTimeout(currentTimeout);
+    currentTimeout = null;
+  }
+  if (skipResolve) {
+    const r = skipResolve;
+    skipResolve = null;
+    r();
   }
 }
 
@@ -95,8 +116,10 @@ function flyTo(zone) {
 
 function wait(ms) {
   return new Promise((resolve) => {
+    skipResolve = resolve;
     currentTimeout = setTimeout(() => {
       currentTimeout = null;
+      skipResolve = null;
       resolve();
     }, ms);
   });
