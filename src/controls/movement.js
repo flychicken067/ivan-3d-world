@@ -1,5 +1,6 @@
 import { CAMERA, WORLD } from '../config.js';
 import { getControls } from './camera.js';
+import { isFlying } from '../ui/minimap.js';
 
 const keys = { w: false, a: false, s: false, d: false };
 const velocity = { x: 0, z: 0 };
@@ -92,6 +93,7 @@ export function updateMovement(delta) {
   const isTouchDevice = 'ontouchstart' in window;
   if (!controls) return;
   if (!isTouchDevice && !controls.isLocked) return;
+  if (isFlying()) return; // Don't fight the camera fly animation
 
   const camera = controls.object;
   const speed = 35; // units per second — fast traversal across 200-unit world

@@ -1,9 +1,8 @@
-import * as TWEEN from '@tweenjs/tween.js';
 import { ZONES, CAMERA } from '../config.js';
 import { getControls } from '../controls/camera.js';
 
 const minimapEl = document.getElementById('minimap');
-let flyTween = null;
+let flyRAF = null;
 
 export function initMinimap() {
   let html = '<div class="minimap-title">World Map</div>';
@@ -20,34 +19,51 @@ export function initMinimap() {
     const controls = getControls();
     if (!controls) return;
 
-    const cam = controls.getObject();
+    const cam = controls.object;
     const targetX = zone.position.x;
     const targetY = CAMERA.height;
     const targetZ = zone.position.z + zone.radius + 3;
 
-    // Stop any existing fly animation
-    if (flyTween) flyTween.stop();
+    // Cancel any in-progress fly
+    if (flyRAF) cancelAnimationFrame(flyRAF);
 
-    const originY = cam.position.y;
-    const coords = { x: cam.position.x, y: cam.position.y, z: cam.position.z, progress: 0 };
+    const startX = cam.position.x;
+    const startY = cam.position.y;
+    const startZ = cam.position.z;
+    const duration = 1500;
+    const startTime = performance.now();
 
-    flyTween = new TWEEN.Tween(coords)
-      .to({ x: targetX, y: targetY, z: targetZ, progress: 1 }, 1500)
-      .easing(TWEEN.Easing.Cubic.InOut)
-      .onUpdate((obj) => {
-        // Arc: add a sine-based Y offset that peaks at midpoint (+5 units)
-        const arcOffset = Math.sin(obj.progress * Math.PI) * 5;
-        cam.position.x = obj.x;
-        cam.position.y = obj.y + arcOffset;
-        cam.position.z = obj.z;
-      })
-      .onComplete(() => {
+    function tick(now) {
+      const elapsed = now - startTime;
+      const raw = Math.min(elapsed / duration, 1);
+
+      // Cubic ease-in-out
+      const t = raw < 0.5
+        ? 4 * raw * raw * raw
+        : 1 - Math.pow(-2 * raw + 2, 3) / 2;
+
+      // Interpolate XZ linearly, Y with arc
+      cam.position.x = startX + (targetX - startX) * t;
+      cam.position.z = startZ + (targetZ - startZ) * t;
+
+      // Base Y lerp + sine arc offset (peaks +5 at midpoint)
+      const baseY = startY + (targetY - startY) * t;
+      cam.position.y = baseY + Math.sin(raw * Math.PI) * 5;
+
+      if (raw < 1) {
+        flyRAF = requestAnimationFrame(tick);
+      } else {
         cam.position.y = targetY;
-        flyTween = null;
-      })
-      .start();
+        flyRAF = null;
+      }
+    }
+
+    flyRAF = requestAnimationFrame(tick);
   });
 }
+
+/** True while camera fly animation is in progress */
+export function isFlying() { return flyRAF !== null; }
 
 export function updateMinimap(currentZoneCode) {
   const items = minimapEl.querySelectorAll('.minimap-item');

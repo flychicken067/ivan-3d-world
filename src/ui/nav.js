@@ -45,7 +45,7 @@ function teleportTo(zone) {
   if (!controls) return;
 
   // Move the camera to the zone entrance (in front of the zone)
-  const cam = controls.getObject();
+  const cam = controls.object;
   cam.position.x = zone.position.x;
   cam.position.z = zone.position.z + zone.radius + 3;
 
