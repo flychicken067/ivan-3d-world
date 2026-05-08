@@ -1,16 +1,48 @@
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js';
 import { events } from '../events.js';
 import { isPanelOpen } from '../ui/overlay.js';
+import { startTour } from '../tour.js';
 
 let controls = null;
+
+function fadeOutStartScreen(startScreen) {
+  if (!startScreen) return;
+  startScreen.classList.add('fade-out');
+  setTimeout(() => {
+    startScreen.style.display = 'none';
+    startScreen.classList.remove('fade-out');
+  }, 600);
+}
 
 export function initCameraControls(camera, domElement) {
   controls = new PointerLockControls(camera, domElement);
 
-  // Clicking the start screen locks the pointer and enters the world
   const startScreen = document.getElementById('start-screen');
+  const tourBtn = document.getElementById('start-tour-btn');
+  const exploreBtn = document.getElementById('start-explore-btn');
+
+  // EXPLORE FREELY → engage pointer lock for WASD
+  if (exploreBtn) {
+    exploreBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      controls.lock();
+    });
+  }
+
+  // TAKE THE TOUR → fade start screen, start tour without pointer lock
+  if (tourBtn) {
+    tourBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      fadeOutStartScreen(startScreen);
+      startTour();
+    });
+  }
+
+  // Fallback: clicking anywhere else on the start screen also enters explore mode
   if (startScreen) {
-    startScreen.addEventListener('click', () => {
+    startScreen.addEventListener('click', (e) => {
+      // Ignore if a child button handled it
+      if (e.target.closest('.start-action-btn')) return;
       controls.lock();
     });
   }
