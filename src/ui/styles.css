@@ -1522,3 +1522,29 @@ canvas#world-canvas {
   .settings-toggle { top: var(--space-lg); }
   .settings-panel { top: calc(var(--space-lg) + 36px); }
 }
+
+/* Home button — top-right, near help-hint */
+.home-btn {
+  position: absolute;
+  top: var(--space-lg);
+  right: 90px;  /* offset from audio toggle */
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 1.5px;
+  background: rgba(13, 26, 13, 0.6);
+  border: 1px solid var(--border-strong);
+  color: var(--text-secondary);
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: all var(--transition-fast);
+}
+.home-btn:hover {
+  color: var(--accent-green);
+  border-color: var(--accent-green);
+  background: rgba(13, 26, 13, 0.85);
+}
+@media (pointer: coarse) {
+  .home-btn { display: none; }
+}

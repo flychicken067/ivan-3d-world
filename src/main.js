@@ -27,6 +27,24 @@ import { initCompass, updateCompass } from './ui/compass.js';
 import { initEasterEggs } from './easter-eggs.js';
 import { initShortcuts } from './ui/shortcuts.js';
 import { initSettings } from './ui/settings.js';
+import { initHomeButton } from './ui/home-button.js';
+import { createButterflies, updateButterflies } from './world/butterflies.js';
+import { initShare } from './ui/share.js';
+
+// Auto-enable reduce-motion if the OS-level preference is set and the user
+// has not explicitly chosen a value yet.
+if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+  try {
+    if (localStorage.getItem('ivan-world-pref-reduce-motion') === null
+        && window.matchMedia
+        && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      localStorage.setItem('ivan-world-pref-reduce-motion', '1');
+    }
+  } catch (_) { /* ignore */ }
+}
+
+const REDUCE_MOTION = typeof localStorage !== 'undefined'
+  && localStorage.getItem('ivan-world-pref-reduce-motion') === '1';
 
 const canvas = document.getElementById('world-canvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -60,6 +78,7 @@ const zoneGroups = createZones(scene);
 const interactiveMeshes = getInteractiveMeshes(zoneGroups);
 createAtmosphere(scene);
 createProximitySparkles(scene);
+if (!REDUCE_MOTION) createButterflies(scene);
 
 // Dynamic sun — slowly rotate directional light along an arc.
 // Y stays high (50–80), X swings -50..+50, ~120s for a full pass.
@@ -101,6 +120,7 @@ initCompass();
 initEasterEggs();
 initShortcuts();
 initSettings();
+initHomeButton();
 
 // Audio — init on first user click (browser autoplay policy)
 document.addEventListener('click', function startAudio() {
