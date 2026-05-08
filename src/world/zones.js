@@ -211,7 +211,7 @@ const BUILDERS = {
   THEATER:   buildTheater,
   LIBRARY:   buildLibrary,
   SOCIAL:    buildSocial,
-  HIRE:      buildHire,
+  COLLABORATE: buildHire,
 };
 
 // ─── Public API ───────────────────────────────────────────────────────────────

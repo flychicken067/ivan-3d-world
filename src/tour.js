@@ -8,7 +8,7 @@ const NARRATION = {
   '04': '04 / THEATER — Articles & Videos. WeChat essays and curated playlists from the building journey.',
   '05': '05 / LIBRARY — Understanding Large Models. From Karpathy notes to a full AI primer — 8 chapters, v17 epub.',
   '06': '06 / SOCIAL — Find Me. X, Xiaohongshu, Weibo, GitHub — wherever you prefer.',
-  '07': '07 / HIRE — Work Together. Open to collaboration, consulting, and interesting projects.',
+  '07': "07 / COLLABORATE — Let's Build Together. Open to AI builder collaborations, consulting, and shared experiments.",
 };
 
 const FLY_DURATION = 2500;

@@ -18,8 +18,8 @@ export const ZONES = [
     content: { eyebrow: 'Library', title: 'Understanding Large Models', body: 'From Karpathy notes to a full AI primer — 8 chapters with 2026 real-world cases. v17 epub available.', buttons: [{ text: 'Download epub', url: '#', primary: true }], tag: { text: 'V17', variant: 'active' } } },
   { code: '06', name: 'SOCIAL', label: 'Social', position: { x: 25, z: 30 }, radius: 15,
     content: { eyebrow: 'Social', title: 'Find Me', body: 'X, Xiaohongshu, Weibo, GitHub — wherever you prefer.', buttons: [{ text: 'X / Twitter', url: '#', primary: false }, { text: 'GitHub', url: '#', primary: false }, { text: 'Xiaohongshu', url: '#', primary: false }] } },
-  { code: '07', name: 'HIRE', label: 'Hire', position: { x: 0, z: 50 }, radius: 15,
-    content: { eyebrow: 'Hire / Contact', title: 'Work Together', body: 'Open to collaboration, consulting, and interesting projects.', buttons: [{ text: 'Submit', url: '#', primary: true }], hasForm: true } },
+  { code: '07', name: 'COLLABORATE', label: 'Collaborate', position: { x: 0, z: 50 }, radius: 15,
+    content: { eyebrow: 'Collaborate', title: "Let's Build Together", body: 'Open to AI builder collaborations, consulting, and shared experiments. Every conversation is a possible product.', buttons: [{ text: 'Start a Conversation', url: '#', primary: true }], hasForm: true } },
 ];
 
 export const CAMERA = { fov: 60, near: 0.1, far: 500, startPosition: { x: 0, y: 2, z: -50 }, moveSpeed: 0.12, height: 2 };
