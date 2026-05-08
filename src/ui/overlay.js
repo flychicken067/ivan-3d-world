@@ -15,9 +15,38 @@ const ZONE_STRIPE = {
   '07': '#7a3838',
 };
 
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h >= 5 && h < 12) return 'Good morning. Welcome back.';
+  if (h >= 12 && h < 17) return "Good afternoon. Glad you're here.";
+  if (h >= 17 && h < 21) return 'Good evening. Take your time.';
+  return 'Burning the midnight oil. Same here.';
+}
+
+function getSessionCount() {
+  try {
+    const key = 'ivan-world-session-count';
+    const cur = parseInt(localStorage.getItem(key) || '0', 10) || 0;
+    const next = cur + 1;
+    localStorage.setItem(key, String(next));
+    return next;
+  } catch (_) {
+    return 1;
+  }
+}
+
 function renderPanel(zone) {
   const { content } = zone;
   const stripeColor = ZONE_STRIPE[zone.code] || '#4a6a3a';
+
+  // Welcome zone — personalized greeting + session count
+  const isWelcome = zone.code === '01';
+  const greetingHtml = isWelcome
+    ? `<p class="panel-greeting" style="font-style:italic;font-family:Georgia,'Times New Roman',serif;color:var(--accent-cream);margin:0 0 10px 0;">${getGreeting()}</p>`
+    : '';
+  const sessionHtml = isWelcome
+    ? `<p class="panel-sessions" style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;opacity:0.6;margin-top:14px;">Sessions: ${getSessionCount()}</p>`
+    : '';
 
   // Build tag HTML
   const tagHtml = content.tag
@@ -72,10 +101,12 @@ function renderPanel(zone) {
         ${mediaHtml}
         <h3 class="panel-title">${content.title || ''}</h3>
         <hr class="panel-divider" />
+        ${greetingHtml}
         <p>${content.body || ''}</p>
         ${metricsHtml}
         ${tagHtml}
         ${formHtml}
+        ${sessionHtml}
       </div>
       ${buttonsHtml.length ? `<div class="panel-footer">${buttonsHtml}</div>` : ''}
     </div>`;
