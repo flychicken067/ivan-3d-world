@@ -13,7 +13,10 @@ import { initCameraControls } from './controls/camera.js';
 import { initMovement, updateMovement, initTouchControls } from './controls/movement.js';
 import { setInteractiveMeshes, initRaycaster, updateHover } from './utils/raycaster.js';
 import { updateHud, getCurrentZone } from './ui/hud.js';
-import { initMinimap, updateMinimap } from './ui/minimap.js';
+import { initMinimap, updateMinimap, isFlying as isMinimapFlying } from './ui/minimap.js';
+import { initStartParallax } from './ui/start-parallax.js';
+import { createCameraTrail, updateCameraTrail } from './world/camera-trail.js';
+import { createDust, updateDust } from './world/dust.js';
 import { initOverlay } from './ui/overlay.js';
 import { initNav } from './ui/nav.js';
 import { initTutorial } from './ui/tutorial.js';
@@ -106,6 +109,8 @@ const interactiveMeshes = getInteractiveMeshes(zoneGroups);
 createAtmosphere(scene);
 createProximitySparkles(scene);
 if (!REDUCE_MOTION) createButterflies(scene);
+if (!REDUCE_MOTION) createDust(scene);
+createCameraTrail(scene);
 
 // Dynamic sun — slowly rotate directional light along an arc.
 // Y stays high (50–80), X swings -50..+50, ~120s for a full pass.
@@ -149,6 +154,7 @@ initShortcuts();
 initSettings();
 initHomeButton();
 initIdleScreensaver();
+initStartParallax();
 initShare({
   canvas,
   render: () => {
@@ -208,6 +214,11 @@ function animate() {
     updateProximitySparkles(camera, zoneGroups);
   }
   if (!REDUCE_MOTION) updateButterflies(elapsed);
+  if (!REDUCE_MOTION) updateDust(elapsed);
+
+  // Camera trail — active during tour or minimap fly
+  const flying = (typeof window !== 'undefined' && window.__tourActive) || isMinimapFlying();
+  updateCameraTrail(camera, flying, elapsed);
 
   // Hover detection on interactive meshes (center crosshair raycast)
   updateHover(camera);

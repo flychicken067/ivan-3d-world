@@ -369,6 +369,22 @@ canvas#world-canvas {
   color: var(--accent-cream);
 }
 
+.minimap-item .mm-distance {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--accent-gold);
+  margin-left: auto;
+  padding-left: 6px;
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+.minimap-item.hovered .mm-distance {
+  opacity: 0.85;
+}
+.minimap-item.hovered .mm-dot {
+  box-shadow: 0 0 8px 2px var(--zone-color, rgba(184, 200, 160, 0.6));
+}
+
 /* --- Nav Overlay --- */
 .nav-overlay {
   position: absolute;
@@ -964,10 +980,26 @@ canvas#world-canvas {
   /* Larger tour narration text on mobile */
   .tour-text { font-size: 1.1rem; }
 
+  /* Stack start screen actions vertically + thumb-friendly sizing */
+  .start-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .start-action-btn {
+    min-height: 56px;
+    padding: 16px 24px;
+    font-size: 0.85rem;
+    width: 100%;
+    transition: transform 0.08s ease, all var(--transition-base);
+  }
+  .start-action-btn:active {
+    transform: scale(0.98);
+  }
+
   /* Bigger TAKE THE TOUR button on mobile */
   .start-action-btn.primary {
     padding: 18px 36px;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     width: 100%;
   }
 }
