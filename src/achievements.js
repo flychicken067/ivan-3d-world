@@ -4,6 +4,7 @@
 import { events } from './events.js';
 import { getVisitedZones } from './visit-tracker.js';
 import { ZONES } from './config.js';
+import { showToast } from './ui/toast.js';
 
 const STORAGE_KEY = 'ivan-world-achievements';
 
@@ -35,19 +36,10 @@ export function getUnlocked() { return new Set(unlocked); }
 
 export function getUnlockedCount() { return unlocked.size; }
 
-function showToast(id) {
+function showAchievementToast(id) {
   const meta = ACHIEVEMENTS[id];
   if (!meta) return;
-  const toast = document.createElement('div');
-  toast.className = 'achievement-toast';
-  toast.innerHTML = `<span class="achievement-check">✓</span><span class="achievement-label">ACHIEVEMENT</span><span class="achievement-sep">—</span><span class="achievement-name">${meta.name}</span>`;
-  document.body.appendChild(toast);
-  // animate in next frame
-  requestAnimationFrame(() => toast.classList.add('visible'));
-  setTimeout(() => {
-    toast.classList.remove('visible');
-    setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 300);
-  }, 2500);
+  showToast(`ACHIEVEMENT — ${meta.name}`, { type: 'achievement', duration: 2500 });
 }
 
 export function unlock(id) {
@@ -55,7 +47,7 @@ export function unlock(id) {
   if (unlocked.has(id)) return false;
   unlocked.add(id);
   save();
-  showToast(id);
+  showAchievementToast(id);
   events.emit('achievement:unlock', id);
   // Update settings badge if present
   updateBadge();

@@ -30,12 +30,16 @@ import { initCompass, updateCompass } from './ui/compass.js';
 import { initEasterEggs } from './easter-eggs.js';
 import { initShortcuts } from './ui/shortcuts.js';
 import { initSettings } from './ui/settings.js';
+import { isPanelOpen, closePanel } from './ui/overlay.js';
+import { isTourActive, stopTour } from './tour.js';
 import { initHomeButton } from './ui/home-button.js';
 import { createButterflies, updateButterflies } from './world/butterflies.js';
 import { initShare } from './ui/share.js';
 import { initIdleScreensaver } from './idle-screensaver.js';
 import './visit-tracker.js';
+import { initVisitLog } from './visit-log.js';
 import { initAchievements } from './achievements.js';
+import { showToast } from './ui/toast.js';
 
 // Auto-enable reduce-motion if the OS-level preference is set and the user
 // has not explicitly chosen a value yet.
@@ -157,6 +161,98 @@ initHomeButton();
 initIdleScreensaver();
 initStartParallax();
 initAchievements();
+initVisitLog();
+
+// ─── Consolidated ESC priority handler ─────────────────────────────────
+// Runs in capture phase; the first action that fires also stops propagation
+// so the legacy per-component ESC listeners don't double-handle. Priority:
+//   1. Shortcuts overlay
+//   2. Credits overlay
+//   3. Zone panel
+//   4. Tour (active)
+//   5. Settings panel
+//   6. Otherwise: do nothing
+window.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  // Don't hijack ESC inside form fields
+  const t = e.target;
+  if (t && t.matches && t.matches('input, textarea, select')) return;
+
+  const shortcuts = document.getElementById('shortcuts-overlay');
+  if (shortcuts && !shortcuts.classList.contains('hidden')) {
+    shortcuts.classList.add('hidden');
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    return;
+  }
+  const credits = document.getElementById('credits-overlay');
+  if (credits) {
+    // Use the close button so easter-eggs.js can reset its internal state.
+    const closeBtn = credits.querySelector('.credits-close');
+    if (closeBtn) closeBtn.click(); else credits.remove();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    return;
+  }
+  if (isPanelOpen()) {
+    closePanel();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    return;
+  }
+  if (isTourActive()) {
+    stopTour();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    return;
+  }
+  const settings = document.getElementById('settings-panel');
+  if (settings && !settings.classList.contains('hidden')) {
+    settings.classList.add('hidden');
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    return;
+  }
+  // Otherwise: do nothing
+}, true);
+
+// Inject "what's new" line into the start screen, above action buttons.
+try {
+  const startContent = document.querySelector('.start-content');
+  const startActions = document.querySelector('.start-actions');
+  if (startContent && startActions && !document.querySelector('.start-whats-new')) {
+    const line = document.createElement('div');
+    line.className = 'start-whats-new';
+    line.textContent = "WHAT'S NEW · v0.7 — achievements, ambient sound, journey log";
+    startContent.insertBefore(line, startActions);
+  }
+} catch (_) { /* ignore */ }
+
+// Total-time tracker: increment localStorage value each frame while the world
+// is active (start screen dismissed). Capped per-tick to avoid huge jumps.
+const TOTAL_TIME_KEY = 'ivan-world-total-time-ms';
+let _totalTimeAccumMs = 0;
+function isWorldActive() {
+  const start = document.getElementById('start-screen');
+  if (!start) return true;
+  // Treat as active once start screen is hidden / faded out
+  return start.classList.contains('hidden') || start.classList.contains('fade-out')
+      || start.style.display === 'none';
+}
+function tickTotalTime(deltaSec) {
+  if (!isWorldActive()) return;
+  if (document.hidden) return;
+  // Cap delta to 1s to avoid stalls inflating the count
+  const dms = Math.min(1000, Math.max(0, deltaSec * 1000));
+  _totalTimeAccumMs += dms;
+  if (_totalTimeAccumMs >= 5000) {
+    try {
+      const cur = parseInt(localStorage.getItem(TOTAL_TIME_KEY) || '0', 10) || 0;
+      localStorage.setItem(TOTAL_TIME_KEY, String(cur + Math.round(_totalTimeAccumMs)));
+    } catch (_) {}
+    _totalTimeAccumMs = 0;
+  }
+}
 
 // Returning visitor detection — adjust start screen primary CTA text
 try {
@@ -203,6 +299,7 @@ function animate() {
   requestAnimationFrame(animate);
   frameCount++;
   const delta = clock.getDelta();
+  tickTotalTime(delta);
   updateMovement(delta);
 
   // Tween updates (Task 15)

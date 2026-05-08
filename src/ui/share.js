@@ -1,6 +1,8 @@
 // src/ui/share.js
 // Share button — captures the current canvas with a watermark and downloads as PNG.
 
+import { showToast } from './toast.js';
+
 let renderFn = null;
 
 /**
@@ -47,8 +49,10 @@ export function initShare({ canvas, render } = {}) {
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
+      try { showToast('Saved screenshot ✓', { type: 'success' }); } catch (_) {}
     } catch (err) {
       console.warn('[share] capture failed', err);
+      try { showToast('Screenshot failed', { type: 'info' }); } catch (_) {}
     }
   });
 }

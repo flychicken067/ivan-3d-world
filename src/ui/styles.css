@@ -1834,3 +1834,65 @@ canvas#world-canvas.debug-invert { filter: invert(1) hue-rotate(180deg); }
   opacity: 0.7;
   letter-spacing: 0.05em;
 }
+
+/* ─── Generic toast (stacked) ──────────────────────────────────────────── */
+.toast {
+  --toast-stack-y: 0px;
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translate(-50%, calc(-16px + var(--toast-stack-y)));
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  background: rgba(20, 22, 18, 0.92);
+  border: 1px solid rgba(201, 169, 110, 0.5);
+  border-radius: 999px;
+  color: #efe7d3;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+.toast.visible {
+  opacity: 1;
+  transform: translate(-50%, var(--toast-stack-y));
+}
+.toast .toast-check { color: #c9a96e; font-weight: bold; }
+.toast .toast-label { opacity: 0.7; }
+.toast .toast-sep   { opacity: 0.4; }
+.toast .toast-name  { color: #c9a96e; font-weight: 600; }
+.toast.toast-info { border-color: rgba(201, 169, 110, 0.35); }
+.toast.toast-info .toast-name { color: #efe7d3; }
+.toast.toast-success .toast-check { color: #a4c98b; }
+
+/* "Your journey" summary inside settings */
+.settings-panel .journey-summary {
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  opacity: 0.75;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+}
+.settings-panel .journey-summary .journey-row { display: block; }
+.settings-panel .journey-summary .journey-empty { opacity: 0.55; font-style: italic; }
+
+/* Start screen "what's new" line */
+.start-whats-new {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--accent-gold);
+  letter-spacing: 1px;
+  text-align: center;
+  margin: 0 0 10px 0;
+  opacity: 0.85;
+  text-transform: uppercase;
+}
