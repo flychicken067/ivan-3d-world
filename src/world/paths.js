@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import { COLORS, ZONES } from '../config.js';
 
-const PATH_WIDTH = 3;
-const PATH_Y = 0.05;
+const PATH_WIDTH = 2.5;
+const PATH_Y = 0.08;
 
 // Zone index connections
 const CONNECTIONS = [
@@ -19,7 +19,7 @@ function createPathSegment(from, to) {
   const angle = Math.atan2(dx, dz);
 
   const geo = new THREE.PlaneGeometry(PATH_WIDTH, length);
-  const mat = new THREE.MeshLambertMaterial({ color: COLORS.pathColor, side: THREE.DoubleSide });
+  const mat = new THREE.MeshBasicMaterial({ color: 0xc9a96e, side: THREE.DoubleSide });
   const mesh = new THREE.Mesh(geo, mat);
 
   mesh.rotation.x = -Math.PI / 2;

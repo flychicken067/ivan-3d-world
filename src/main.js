@@ -18,6 +18,7 @@ import { initNav } from './ui/nav.js';
 import { initTutorial } from './ui/tutorial.js';
 import { initAudio, playZoneEnter } from './audio.js';
 import { events } from './events.js';
+import './tour.js';
 
 const canvas = document.getElementById('world-canvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });

@@ -1,6 +1,7 @@
 import { CAMERA, WORLD } from '../config.js';
 import { getControls } from './camera.js';
 import { isFlying } from '../ui/minimap.js';
+import { isTourActive } from '../tour.js';
 
 const keys = { w: false, a: false, s: false, d: false };
 const velocity = { x: 0, z: 0 };
@@ -89,6 +90,7 @@ export function initMovement() {
 }
 
 export function updateMovement(delta) {
+  if (isTourActive()) return;
   const controls = getControls();
   const isTouchDevice = 'ontouchstart' in window;
   if (!controls) return;

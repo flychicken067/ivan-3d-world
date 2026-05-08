@@ -1,5 +1,6 @@
 import { ZONES, CAMERA } from '../config.js';
 import { getControls } from '../controls/camera.js';
+import { startTour } from '../tour.js';
 
 const minimapEl = document.getElementById('minimap');
 let flyRAF = null;
@@ -9,9 +10,15 @@ export function initMinimap() {
   ZONES.forEach(zone => {
     html += `<div class="minimap-item" data-zone="${zone.code}"><span class="mm-code">${zone.code}</span><span class="mm-name">${zone.label}</span></div>`;
   });
+  html += '<div class="minimap-tour-btn" data-action="tour">Take the Tour</div>';
   minimapEl.innerHTML = html;
 
   minimapEl.addEventListener('click', (e) => {
+    const tourBtn = e.target.closest('.minimap-tour-btn');
+    if (tourBtn) {
+      startTour();
+      return;
+    }
     const item = e.target.closest('.minimap-item');
     if (!item) return;
     const zone = ZONES.find(z => z.code === item.dataset.zone);

@@ -20,30 +20,7 @@ export function initAudio() {
   masterGain.gain.value = 1.0;
   masterGain.connect(ctx.destination);
 
-  // Ambient drone: low-frequency oscillator with LFO modulation
-  droneOsc = ctx.createOscillator();
-  droneOsc.type = 'sine';
-  droneOsc.frequency.value = 55; // A1, deep hum
-
-  const droneGain = ctx.createGain();
-  droneGain.gain.value = 0.06; // very quiet
-
-  // LFO for gentle volume modulation
-  droneLfo = ctx.createOscillator();
-  droneLfo.type = 'sine';
-  droneLfo.frequency.value = 0.15; // slow breathing
-
-  const lfoGain = ctx.createGain();
-  lfoGain.gain.value = 0.02; // subtle modulation depth
-
-  droneLfo.connect(lfoGain);
-  lfoGain.connect(droneGain.gain);
-
-  droneOsc.connect(droneGain);
-  droneGain.connect(masterGain);
-
-  droneOsc.start();
-  droneLfo.start();
+  // No ambient drone — too noisy. Only event-driven sounds (click, zone enter)
 
   // Wire up toggle button
   if (toggleBtn) {
@@ -61,16 +38,16 @@ export function playClick() {
   if (!ctx || muted) return;
   const osc = ctx.createOscillator();
   osc.type = 'sine';
-  osc.frequency.value = 440;
+  osc.frequency.value = 880; // higher = more "click", less "tone"
 
   const gain = ctx.createGain();
-  gain.gain.setValueAtTime(0.12, ctx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+  gain.gain.setValueAtTime(0.05, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
 
   osc.connect(gain);
   gain.connect(masterGain);
   osc.start(ctx.currentTime);
-  osc.stop(ctx.currentTime + 0.2);
+  osc.stop(ctx.currentTime + 0.1);
 }
 
 /**
