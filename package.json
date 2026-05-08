@@ -1,17 +1,18 @@
 {
   "name": "ivan-3d-world",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "0.7.0",
+  "description": "Ivan's 3D interactive portfolio — The Builder Who Ships. A Three.js world with 7 zones, guided tour, and editorial green aesthetic.",
+  "main": "src/main.js",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "deploy": "vite build && echo 'dist/ ready to deploy. Run: vercel --prod'"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["three.js", "portfolio", "3d", "vite", "webgl"],
+  "author": "Ivan",
+  "license": "MIT",
   "dependencies": {
     "@tweenjs/tween.js": "^25.0.0",
     "postprocessing": "^6.39.1",

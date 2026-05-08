@@ -23,6 +23,9 @@ function mat(color, flat = true) {
 // Track welcome zone orbs for animation
 const welcomeOrbs = [];
 
+// Track soulprint incense flames for flicker animation
+const soulprintFlames = [];
+
 /** WELCOME — large sign board on two posts + portrait frame + floating orbs */
 function buildWelcome(zone) {
   const group = new THREE.Group();
@@ -123,6 +126,32 @@ function buildSoulprint(zone) {
   floor.receiveShadow = true;
   group.add(floor);
 
+  // Stone tablet in the center — interactive
+  const tablet = new THREE.Mesh(new THREE.BoxGeometry(1.0, 1.4, 0.3), mat(0x6b5640));
+  tablet.position.set(0, 0.9, 0);
+  tablet.userData = { zoneCode: zone.code, zoneName: zone.name, interactive: true };
+  tablet.castShadow = true;
+  group.add(tablet);
+
+  // 4 incense holder posts at corners with flickering flames
+  const flameMat = new THREE.MeshLambertMaterial({
+    color: 0xffaa33,
+    emissive: 0xffaa33,
+    emissiveIntensity: 0.9,
+    flatShading: true,
+  });
+  [[-2, -2], [2, -2], [-2, 2], [2, 2]].forEach(([x, z]) => {
+    const holder = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.1, 0.5, 6), mat(0x4a3a2a));
+    holder.position.set(x, 0.45, z);
+    holder.castShadow = true;
+    group.add(holder);
+
+    const flame = new THREE.Mesh(new THREE.ConeGeometry(0.07, 0.22, 6), flameMat);
+    flame.position.set(x, 0.82, z);
+    group.add(flame);
+    soulprintFlames.push(flame);
+  });
+
   return group;
 }
 
@@ -137,8 +166,14 @@ function buildTheater(zone) {
   tent.castShadow = true;
   group.add(tent);
 
-  // Screen
-  const screen = new THREE.Mesh(new THREE.BoxGeometry(5, 3, 0.15), mat(0x111111));
+  // Screen — emissive glow base, brighter on hover
+  const screenMat = new THREE.MeshLambertMaterial({
+    color: 0x111111,
+    emissive: 0x222222,
+    emissiveIntensity: 1.0,
+    flatShading: true,
+  });
+  const screen = new THREE.Mesh(new THREE.BoxGeometry(5, 3, 0.15), screenMat);
   screen.position.set(3, 2.5, 0);
   screen.userData = { zoneCode: zone.code, zoneName: zone.name, interactive: true };
   screen.castShadow = true;
@@ -149,6 +184,33 @@ function buildTheater(zone) {
     const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 2.5, 6), mat(0x555555));
     leg.position.set(x, 1.25, 0);
     group.add(leg);
+  });
+
+  // Spotlight cone — translucent yellow pointing down at the screen
+  const spotMat = new THREE.MeshBasicMaterial({
+    color: 0xffe5a0,
+    transparent: true,
+    opacity: 0.18,
+    depthWrite: false,
+  });
+  const spot = new THREE.Mesh(new THREE.ConeGeometry(1.4, 4.0, 16, 1, true), spotMat);
+  spot.position.set(3, 6.0, 0);
+  spot.rotation.x = Math.PI; // point downward
+  group.add(spot);
+
+  // 2 small tree decorations near the tent
+  const trunkMat = mat(0x5a3a20);
+  const leafMat = mat(0x4a6a3a);
+  [[-5.5, 1.2], [-1.5, -2.5]].forEach(([tx, tz]) => {
+    const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.15, 1.2, 6), trunkMat);
+    trunk.position.set(tx, 0.6, tz);
+    trunk.castShadow = true;
+    group.add(trunk);
+
+    const leaves = new THREE.Mesh(new THREE.ConeGeometry(0.7, 1.6, 7), leafMat);
+    leaves.position.set(tx, 1.7, tz);
+    leaves.castShadow = true;
+    group.add(leaves);
   });
 
   return group;
@@ -289,6 +351,16 @@ export function updateZones(zoneGroups, time) {
     // Each zone bobs at slightly different phase
     const phase = i * 1.2;
     group.position.y = Math.sin(time * 0.5 + phase) * 0.15;
+  });
+
+  // Soulprint incense flames — random flicker scale
+  soulprintFlames.forEach((flame, idx) => {
+    if (reduceMotion) {
+      flame.scale.set(1, 1, 1);
+      return;
+    }
+    const f = 0.85 + Math.sin(time * 12 + idx * 1.7) * 0.1 + Math.random() * 0.08;
+    flame.scale.set(f, f, f);
   });
 
   // Welcome orbs — slowly rotate around sign center + bob vertically
