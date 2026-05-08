@@ -1,5 +1,7 @@
 # Ivan's 3D Interactive Portfolio
 
+**Live: https://ivan-3d-world.vercel.app**
+
 A handcrafted, explorable 3D world that doubles as a portfolio. Walk through seven themed zones, listen for ambient cues, and discover Ivan's work the way you'd wander a sculpture garden — at your own pace.
 
 Built with [Three.js](https://threejs.org/), [Vite](https://vitejs.dev/), and vanilla JavaScript. No React, no UI framework — just the DOM and WebGL.
