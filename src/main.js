@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import * as TWEEN from '@tweenjs/tween.js';
 import { COLORS, CAMERA } from './config.js';
-import { createSky } from './world/sky.js';
+import { createSky, updateSky } from './world/sky.js';
+import { createProximitySparkles, updateProximitySparkles } from './world/proximity-sparkles.js';
 import { createTerrain } from './world/terrain.js';
 import { createVegetationInstanced } from './world/vegetation.js';
 import { createPaths } from './world/paths.js';
@@ -24,6 +25,7 @@ import { setComposer, update as perfUpdate, usePostFx } from './perf.js';
 import { initLoader } from './ui/loader.js';
 import { initCompass, updateCompass } from './ui/compass.js';
 import { initEasterEggs } from './easter-eggs.js';
+import { initShortcuts } from './ui/shortcuts.js';
 
 const canvas = document.getElementById('world-canvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -56,6 +58,16 @@ createPaths(scene);
 const zoneGroups = createZones(scene);
 const interactiveMeshes = getInteractiveMeshes(zoneGroups);
 createAtmosphere(scene);
+createProximitySparkles(scene);
+
+// Dynamic sun — slowly rotate directional light along an arc.
+// Y stays high (50–80), X swings -50..+50, ~120s for a full pass.
+function updateSun(time) {
+  const cycle = Math.sin(time / 60); // -1..1, ~120s period
+  directional.position.x = cycle * 50;
+  directional.position.y = 65 + Math.cos(time / 60) * 15; // 50..80
+  directional.position.z = 30;
+}
 
 // Post-processing pipeline (bloom, tone mapping, vignette)
 const composer = initPostProcessing(renderer, scene, camera);
@@ -82,10 +94,11 @@ initNav();
 // Tutorial overlay (Task 14)
 initTutorial();
 
-// Loader, compass, easter eggs
+// Loader, compass, easter eggs, shortcuts
 initLoader();
 initCompass();
 initEasterEggs();
+initShortcuts();
 
 // Audio — init on first user click (browser autoplay policy)
 document.addEventListener('click', function startAudio() {
@@ -125,6 +138,9 @@ function animate() {
   const elapsed = clock.elapsedTime;
   updateZones(zoneGroups, elapsed);
   updateAtmosphere(elapsed);
+  updateSun(elapsed);
+  updateSky(elapsed);
+  updateProximitySparkles(camera, zoneGroups);
 
   // Hover detection on interactive meshes (center crosshair raycast)
   updateHover(camera);

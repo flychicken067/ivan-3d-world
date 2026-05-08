@@ -13,8 +13,10 @@ const NARRATION = {
 
 const FLY_DURATION = 2500;
 const PAUSE_DURATION = 4000;
+const RESUME_KEY = 'ivan-world-tour-last-zone';
 
 let active = false;
+let startIndex = 0;
 let currentRAF = null;
 let currentTimeout = null;
 let narrationEl = null;
@@ -127,21 +129,26 @@ function wait(ms) {
 
 async function runTour() {
   const total = ZONES.length;
-  for (let i = 0; i < total; i++) {
+  for (let i = startIndex; i < total; i++) {
     if (!active) return;
     const zone = ZONES[i];
+    // Save current zone as last viewed (for resume)
+    try { localStorage.setItem(RESUME_KEY, String(i)); } catch (e) {}
     showNarration(zone, i, total);
     await flyTo(zone);
     if (!active) return;
     await wait(PAUSE_DURATION);
     if (!active) return;
   }
+  // Tour completed normally — clear resume marker
+  try { localStorage.removeItem(RESUME_KEY); } catch (e) {}
   stopTour();
 }
 
-export function startTour() {
+export function startTour(fromIndex = 0) {
   if (active) return;
   active = true;
+  startIndex = Math.max(0, Math.min(fromIndex, ZONES.length - 1));
   window.__tourActive = true;
 
   // Try to release pointer lock so user can see UI
@@ -192,4 +199,60 @@ export function stopTour() {
 
 export function isTourActive() {
   return active;
+}
+
+let toastEl = null;
+
+function dismissToast() {
+  if (toastEl && toastEl.parentNode) {
+    toastEl.parentNode.removeChild(toastEl);
+  }
+  toastEl = null;
+}
+
+/**
+ * Start tour, but if there's a saved last-zone from a previous interrupted
+ * tour, show a small toast with [Resume] / [Start over] buttons.
+ */
+export function startTourMaybeResume() {
+  if (active) return;
+  let savedIdx = -1;
+  try {
+    const raw = localStorage.getItem(RESUME_KEY);
+    if (raw !== null) savedIdx = parseInt(raw, 10);
+  } catch (e) {}
+
+  if (!Number.isFinite(savedIdx) || savedIdx <= 0 || savedIdx >= ZONES.length) {
+    // No valid resume point → start from 0
+    try { localStorage.removeItem(RESUME_KEY); } catch (e) {}
+    startTour(0);
+    return;
+  }
+
+  // Already showing a toast? bail
+  if (toastEl) return;
+
+  const zone = ZONES[savedIdx];
+  toastEl = document.createElement('div');
+  toastEl.className = 'tour-resume-toast';
+  toastEl.innerHTML = `
+    <div class="tour-resume-text">Resume tour from zone ${zone.code} — ${zone.label}?</div>
+    <div class="tour-resume-buttons">
+      <button class="tour-resume-btn resume">Resume</button>
+      <button class="tour-resume-btn start-over">Start over</button>
+    </div>
+  `;
+  document.body.appendChild(toastEl);
+
+  toastEl.querySelector('.resume').addEventListener('click', (e) => {
+    e.stopPropagation();
+    dismissToast();
+    startTour(savedIdx);
+  });
+  toastEl.querySelector('.start-over').addEventListener('click', (e) => {
+    e.stopPropagation();
+    try { localStorage.removeItem(RESUME_KEY); } catch (err) {}
+    dismissToast();
+    startTour(0);
+  });
 }

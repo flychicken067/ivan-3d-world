@@ -1,7 +1,7 @@
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js';
 import { events } from '../events.js';
 import { isPanelOpen } from '../ui/overlay.js';
-import { startTour } from '../tour.js';
+import { startTourMaybeResume } from '../tour.js';
 
 let controls = null;
 
@@ -34,7 +34,7 @@ export function initCameraControls(camera, domElement) {
     tourBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       fadeOutStartScreen(startScreen);
-      startTour();
+      startTourMaybeResume();
     });
   }
 

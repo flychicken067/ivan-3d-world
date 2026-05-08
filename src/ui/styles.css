@@ -402,6 +402,12 @@ canvas#world-canvas {
   pointer-events: auto;
   background: rgba(6, 11, 6, 0.6);
   backdrop-filter: blur(4px);
+  animation: panel-overlay-fade 240ms ease;
+}
+
+@keyframes panel-overlay-fade {
+  from { opacity: 0; backdrop-filter: blur(0); }
+  to { opacity: 1; backdrop-filter: blur(4px); }
 }
 
 .panel {
@@ -413,6 +419,18 @@ canvas#world-canvas {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  animation: panel-pop-in 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes panel-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .panel-header {
@@ -859,8 +877,84 @@ canvas#world-canvas {
 }
 @media (pointer: coarse) {
   #touch-joystick { display: flex; }
-  .minimap { bottom: 200px; }
   .crosshair { display: none; }
+  .compass { display: none; }
+  .audio-toggle { display: none; }
+
+  /* Minimap pinned to bottom-left, above the touch joystick */
+  .minimap {
+    bottom: 200px;
+    left: var(--space-md);
+    right: auto;
+    width: 150px;
+  }
+
+  /* Larger tour narration text on mobile */
+  .tour-text { font-size: 1.1rem; }
+
+  /* Bigger TAKE THE TOUR button on mobile */
+  .start-action-btn.primary {
+    padding: 18px 36px;
+    font-size: 0.8rem;
+    width: 100%;
+  }
+}
+
+/* --- Tour Resume Toast --- */
+.tour-resume-toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--bg-panel);
+  border: 1px solid var(--accent-gold);
+  border-radius: 10px;
+  padding: var(--space-lg);
+  z-index: 250;
+  text-align: center;
+  pointer-events: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  max-width: 360px;
+}
+.tour-resume-text {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--accent-cream);
+  margin-bottom: var(--space-md);
+  line-height: 1.5;
+}
+.tour-resume-buttons {
+  display: flex;
+  gap: var(--space-sm);
+  justify-content: center;
+}
+.tour-resume-btn {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.tour-resume-btn.resume {
+  background: var(--accent-gold);
+  color: var(--bg-deep);
+  border: 1px solid var(--accent-gold);
+}
+.tour-resume-btn.resume:hover {
+  opacity: 0.85;
+}
+.tour-resume-btn.start-over {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-strong);
+}
+.tour-resume-btn.start-over:hover {
+  color: var(--accent-green);
+  border-color: var(--accent-green);
 }
 
 /* --- Audio Toggle --- */
@@ -1077,4 +1171,138 @@ canvas#world-canvas {
 .credits-close:hover {
   background: var(--accent-green);
   color: var(--bg-deep);
+}
+
+/* ============================================================
+   SHORTCUTS overlay (press ? to toggle)
+   ============================================================ */
+.shortcuts-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  background: rgba(6, 11, 6, 0.7);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  animation: shortcuts-fade 200ms ease;
+}
+@keyframes shortcuts-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.shortcuts-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  padding: var(--space-xl);
+  max-width: 420px;
+  width: 90%;
+}
+.shortcuts-eyebrow {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 3px;
+  color: var(--accent-gold);
+  text-align: center;
+  margin-bottom: var(--space-sm);
+}
+.shortcuts-title {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 1.4rem;
+  color: var(--accent-cream);
+  text-align: center;
+  margin-bottom: var(--space-lg);
+}
+.shortcuts-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+.shortcut-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+.shortcut-row:last-child { border-bottom: none; }
+.shortcut-keys {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.shortcut-key {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 1px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  padding: 3px 8px;
+  min-width: 24px;
+  text-align: center;
+  color: var(--accent-cream);
+}
+.shortcut-plus {
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  margin: 0 2px;
+}
+.shortcut-desc {
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+.shortcuts-hint {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border);
+}
+.shortcuts-close {
+  display: block;
+  margin: 0 auto;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 3px;
+  background: transparent;
+  border: 1px solid var(--accent-green);
+  color: var(--accent-green);
+  padding: 8px 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.shortcuts-close:hover {
+  background: var(--accent-green);
+  color: var(--bg-deep);
+}
+
+/* '?' help indicator at bottom-right (next to minimap area) */
+.help-hint {
+  position: absolute;
+  bottom: var(--space-lg);
+  left: var(--space-lg);
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  pointer-events: none;
+  opacity: 0.5;
+}
+.help-hint kbd {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-strong);
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-family: var(--mono);
 }

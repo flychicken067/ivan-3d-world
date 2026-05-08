@@ -2,6 +2,10 @@ import * as THREE from 'three';
 import { COLORS } from '../config.js';
 
 let skyMesh = null;
+let skyMaterial = null;
+const baseBottom = new THREE.Color();
+const baseTop = new THREE.Color();
+const tmpColor = new THREE.Color();
 
 export function createSky(scene) {
   const vertexShader = /* glsl */`
@@ -39,10 +43,41 @@ export function createSky(scene) {
   });
 
   skyMesh = new THREE.Mesh(geometry, material);
+  skyMaterial = material;
+  baseBottom.set(COLORS.skyBottom);
+  baseTop.set(COLORS.skyTop);
   scene.add(skyMesh);
   return skyMesh;
 }
 
 export function getSky() {
   return skyMesh;
+}
+
+/**
+ * Subtly tint the sky based on time-of-day cycle.
+ * Uses Math.sin(time / 60) to drive the cycle (~120s full pass).
+ * Warmer at "sunset" edges, cooler at noon.
+ */
+export function updateSky(time) {
+  if (!skyMaterial) return;
+  const cycle = Math.sin(time / 60); // -1..1
+  // Warm tint at edges (|cycle|->1), cool at center (cycle=0)
+  const warmth = 1 - Math.abs(cycle); // 1 at noon, 0 at sunset
+  // bottom color: blend between warm orange-ish and cool baseline
+  tmpColor.copy(baseBottom);
+  // Sunset shift: nudge toward orange (R+, G slight-, B-)
+  const sunsetMix = Math.abs(cycle) * 0.18;
+  tmpColor.r = Math.min(1, baseBottom.r + sunsetMix * 0.4);
+  tmpColor.g = baseBottom.g + sunsetMix * 0.05;
+  tmpColor.b = Math.max(0, baseBottom.b - sunsetMix * 0.15);
+  // Noon cool tint (subtle)
+  tmpColor.b = Math.min(1, tmpColor.b + warmth * 0.04);
+  skyMaterial.uniforms.bottomColor.value.copy(tmpColor);
+
+  // Top color subtle shift
+  tmpColor.copy(baseTop);
+  tmpColor.r = Math.min(1, baseTop.r + sunsetMix * 0.15);
+  tmpColor.b = Math.max(0, baseTop.b - sunsetMix * 0.05);
+  skyMaterial.uniforms.topColor.value.copy(tmpColor);
 }

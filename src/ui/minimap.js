@@ -1,6 +1,6 @@
 import { ZONES, CAMERA } from '../config.js';
 import { getControls } from '../controls/camera.js';
-import { startTour } from '../tour.js';
+import { startTourMaybeResume } from '../tour.js';
 
 const minimapEl = document.getElementById('minimap');
 let flyRAF = null;
@@ -16,7 +16,7 @@ export function initMinimap() {
   minimapEl.addEventListener('click', (e) => {
     const tourBtn = e.target.closest('.minimap-tour-btn');
     if (tourBtn) {
-      startTour();
+      startTourMaybeResume();
       return;
     }
     const item = e.target.closest('.minimap-item');
