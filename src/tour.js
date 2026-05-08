@@ -182,6 +182,15 @@ async function runTour() {
   }
   // Tour completed normally — clear resume marker
   try { localStorage.removeItem(RESUME_KEY); } catch (e) {}
+
+  // Celebration message — brief pause showing "Tour complete"
+  if (textEl && progressEl && zoneNameEl) {
+    progressEl.textContent = '✓';
+    zoneNameEl.textContent = 'TOUR COMPLETE';
+    textEl.textContent = 'Now explore freely. Click any zone to learn more, or press ? for shortcuts.';
+  }
+  // Wait 4s then close, but allow user to dismiss
+  await wait(4000);
   stopTour();
 }
 

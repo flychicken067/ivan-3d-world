@@ -35,6 +35,7 @@ export function createAtmosphere(scene) {
 
 export function updateAtmosphere(time) {
   if (!particles) return;
+  if (typeof localStorage !== 'undefined' && localStorage.getItem('ivan-world-pref-reduce-motion') === '1') return;
 
   const positions = particles.geometry.attributes.position.array;
 

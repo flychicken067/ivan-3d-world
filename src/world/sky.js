@@ -61,6 +61,7 @@ export function getSky() {
  */
 export function updateSky(time) {
   if (!skyMaterial) return;
+  if (typeof localStorage !== 'undefined' && localStorage.getItem('ivan-world-pref-reduce-motion') === '1') return;
   const cycle = Math.sin(time / 60); // -1..1
   // Warm tint at edges (|cycle|->1), cool at center (cycle=0)
   const warmth = 1 - Math.abs(cycle); // 1 at noon, 0 at sunset

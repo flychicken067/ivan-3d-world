@@ -47,7 +47,7 @@ const REDUCE_MOTION = typeof localStorage !== 'undefined'
   && localStorage.getItem('ivan-world-pref-reduce-motion') === '1';
 
 const canvas = document.getElementById('world-canvas');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setClearColor(COLORS.bgDeep);
@@ -121,6 +121,13 @@ initEasterEggs();
 initShortcuts();
 initSettings();
 initHomeButton();
+initShare({
+  canvas,
+  render: () => {
+    if (usePostFx) composer.render();
+    else renderer.render(scene, camera);
+  },
+});
 
 // Audio — init on first user click (browser autoplay policy)
 document.addEventListener('click', function startAudio() {
@@ -164,6 +171,7 @@ function animate() {
   updateSun(elapsed);
   updateSky(elapsed);
   updateProximitySparkles(camera, zoneGroups);
+  if (!REDUCE_MOTION) updateButterflies(elapsed);
 
   // Hover detection on interactive meshes (center crosshair raycast)
   updateHover(camera);

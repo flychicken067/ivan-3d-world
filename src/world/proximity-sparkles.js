@@ -49,6 +49,10 @@ export function createProximitySparkles(scene) {
 
 export function updateProximitySparkles(camera, zoneGroups) {
   if (!points || !zoneGroups || !zoneGroups.length) return;
+  if (typeof localStorage !== 'undefined' && localStorage.getItem('ivan-world-pref-reduce-motion') === '1') {
+    if (material) material.opacity = 0;
+    return;
+  }
 
   const now = performance.now() / 1000;
   const dt = lastTime === 0 ? 0 : Math.min(now - lastTime, 0.1);
