@@ -1575,3 +1575,47 @@ canvas#world-canvas {
 @media (pointer: coarse) {
   .home-btn { display: none; }
 }
+
+/* Panel media — optional image at top of panel body */
+.panel-media {
+  width: 100%;
+  margin-bottom: var(--space-md);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.panel-media img {
+  width: 100%;
+  display: block;
+  max-height: 280px;
+  object-fit: cover;
+}
+
+/* Panel metrics — small stat row */
+.panel-metrics {
+  display: flex;
+  gap: var(--space-md);
+  margin: var(--space-md) 0;
+  padding: var(--space-md) 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.metric {
+  flex: 1;
+  text-align: center;
+}
+.metric-value {
+  font-family: var(--mono);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--accent-cream);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.metric-label {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}

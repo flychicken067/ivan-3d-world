@@ -24,6 +24,16 @@ function renderPanel(zone) {
     ? `<span class="tag tag-${content.tag.variant}">${content.tag.text}</span>`
     : '';
 
+  // Optional media (image url) — if zone.content.media is set
+  const mediaHtml = content.media
+    ? `<div class="panel-media"><img src="${content.media}" alt="${content.title || ''}" loading="lazy"/></div>`
+    : '';
+
+  // Optional metrics — array of {label, value}
+  const metricsHtml = content.metrics
+    ? `<div class="panel-metrics">${content.metrics.map(m => `<div class="metric"><div class="metric-value">${m.value}</div><div class="metric-label">${m.label}</div></div>`).join('')}</div>`
+    : '';
+
   // Build form HTML if needed
   let formHtml = '';
   if (content.hasForm) {
@@ -42,10 +52,12 @@ function renderPanel(zone) {
       </div>`;
   }
 
-  // Build buttons HTML
-  const buttonsHtml = (content.buttons || []).map(btn =>
-    `<a href="${btn.url}" class="${btn.primary ? 'btn-primary' : 'btn-ghost'}">${btn.text}</a>`
-  ).join('');
+  // Build buttons HTML — open external links in new tab
+  const buttonsHtml = (content.buttons || []).map(btn => {
+    const isExternal = btn.url && btn.url !== '#' && !btn.url.startsWith('mailto:');
+    const targetAttr = isExternal ? ' target="_blank" rel="noopener noreferrer"' : '';
+    return `<a href="${btn.url}"${targetAttr} class="${btn.primary ? 'btn-primary' : 'btn-ghost'}">${btn.text}</a>`;
+  }).join('');
 
   return `
     <div class="panel">
@@ -54,12 +66,14 @@ function renderPanel(zone) {
         <div>
           <div class="panel-eyebrow">${content.eyebrow || ''}</div>
         </div>
-        <button class="panel-close" id="panel-close-btn">ESC</button>
+        <button class="panel-close" id="panel-close-btn" aria-label="Close panel">ESC</button>
       </div>
       <div class="panel-body">
+        ${mediaHtml}
         <h3 class="panel-title">${content.title || ''}</h3>
         <hr class="panel-divider" />
         <p>${content.body || ''}</p>
+        ${metricsHtml}
         ${tagHtml}
         ${formHtml}
       </div>

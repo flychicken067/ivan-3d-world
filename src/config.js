@@ -7,7 +7,18 @@ export const COLORS = {
 
 export const ZONES = [
   { code: '01', name: 'WELCOME', label: 'Welcome', position: { x: 0, z: -40 }, radius: 15,
-    content: { eyebrow: 'Personal Hub', title: 'The Builder Who Ships.', body: 'Six products, forty thousand words, one book — all built in sixty days. Every project is a decision. Every decision left a trace.', buttons: [] } },
+    content: {
+      eyebrow: 'Personal Hub',
+      title: 'The Builder Who Ships.',
+      body: 'Six products, forty thousand words, one book — all built in sixty days. Every project is a decision. Every decision left a trace.',
+      metrics: [
+        { value: '60', label: 'Days' },
+        { value: '6', label: 'Products' },
+        { value: '40k', label: 'Words' },
+        { value: '1', label: 'Book' },
+      ],
+      buttons: [],
+    } },
   { code: '02', name: 'PROJECTS', label: 'Projects', position: { x: -25, z: -15 }, radius: 18,
     content: { eyebrow: 'Project Archive', title: 'THEPAI', body: 'AI video generation for TikTok commerce accounts. From highlight clips to AI-generated product videos targeting GMV.', buttons: [{ text: 'Visit Site', url: '#', primary: true }, { text: 'GitHub', url: '#', primary: false }], tag: { text: 'VERIFIED', variant: 'active' } } },
   { code: '03', name: 'SOULPRINT', label: 'Soulprint', position: { x: 25, z: -15 }, radius: 15,
