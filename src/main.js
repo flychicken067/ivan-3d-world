@@ -16,6 +16,8 @@ import { initMinimap, updateMinimap } from './ui/minimap.js';
 import { initOverlay } from './ui/overlay.js';
 import { initNav } from './ui/nav.js';
 import { initTutorial } from './ui/tutorial.js';
+import { initAudio, playZoneEnter } from './audio.js';
+import { events } from './events.js';
 
 const canvas = document.getElementById('world-canvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -72,6 +74,15 @@ initNav();
 
 // Tutorial overlay (Task 14)
 initTutorial();
+
+// Audio — init on first user click (browser autoplay policy)
+document.addEventListener('click', function startAudio() {
+  initAudio();
+  document.removeEventListener('click', startAudio);
+}, { once: true });
+
+// Play zone-enter sound when zone changes
+events.on('zone:enter', () => playZoneEnter());
 
 // Resize handler
 window.addEventListener('resize', () => {

@@ -1,4 +1,5 @@
 import { ZONES } from '../config.js';
+import { events } from '../events.js';
 
 const hudEl = document.getElementById('hud-zone');
 let currentZone = null;
@@ -15,6 +16,7 @@ export function updateHud(playerX, playerZ) {
     currentZone = insideZone.code;
     hudEl.textContent = `${insideZone.code} · ${insideZone.name}`;
     hudEl.classList.add('visible');
+    events.emit('zone:enter', { code: insideZone.code, name: insideZone.name });
     clearTimeout(fadeTimeout);
     fadeTimeout = setTimeout(() => hudEl.classList.remove('visible'), 3000);
   } else if (!insideZone && currentZone) {

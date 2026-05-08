@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { events } from '../events.js';
+import { playClick } from '../audio.js';
 
 const raycaster = new THREE.Raycaster();
 const center = new THREE.Vector2(0, 0);
@@ -15,7 +16,10 @@ export function initRaycaster(camera) {
     if (intersects.length > 0) {
       const hit = intersects[0].object;
       const { zoneCode, zoneName } = hit.userData;
-      if (zoneCode) events.emit('zone:click', { code: zoneCode, name: zoneName });
+      if (zoneCode) {
+        playClick();
+        events.emit('zone:click', { code: zoneCode, name: zoneName });
+      }
     }
   });
 }
