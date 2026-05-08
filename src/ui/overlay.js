@@ -1,6 +1,7 @@
 import { ZONES } from '../config.js';
 import { events } from '../events.js';
 import { getControls } from '../controls/camera.js';
+import { getLibraryBookName } from '../world/zones.js';
 
 const overlayEl = document.getElementById('panel-overlay');
 
@@ -35,9 +36,18 @@ function getSessionCount() {
   }
 }
 
-function renderPanel(zone) {
+function renderPanel(zone, opts = {}) {
   const { content } = zone;
   const stripeColor = ZONE_STRIPE[zone.code] || '#4a6a3a';
+
+  // Optional "you picked the {color} book" line for Library zone
+  let bookLineHtml = '';
+  if (zone.code === '05' && typeof opts.bookIndex === 'number') {
+    const colorName = getLibraryBookName(opts.bookIndex);
+    if (colorName) {
+      bookLineHtml = `<p class="panel-book-pick" style="font-style:italic;font-family:Georgia,'Times New Roman',serif;opacity:0.75;margin:8px 0 0 0;font-size:13px;">You picked the ${colorName} book.</p>`;
+    }
+  }
 
   // Welcome zone — personalized greeting + session count
   const isWelcome = zone.code === '01';
@@ -105,6 +115,7 @@ function renderPanel(zone) {
         <p>${content.body || ''}</p>
         ${metricsHtml}
         ${tagHtml}
+        ${bookLineHtml}
         ${formHtml}
         ${sessionHtml}
       </div>
@@ -112,11 +123,11 @@ function renderPanel(zone) {
     </div>`;
 }
 
-export function openPanel(zoneCode) {
+export function openPanel(zoneCode, opts = {}) {
   const zone = ZONES.find(z => z.code === zoneCode);
   if (!zone) return;
 
-  overlayEl.innerHTML = renderPanel(zone);
+  overlayEl.innerHTML = renderPanel(zone, opts);
   overlayEl.classList.remove('hidden');
 
   // Unlock pointer so mouse cursor is usable in the panel
@@ -152,8 +163,11 @@ export function isPanelOpen() {
 
 export function initOverlay() {
   // Listen for zone click events
-  events.on('zone:click', ({ code }) => {
-    openPanel(code);
+  events.on('zone:click', (payload) => {
+    if (!payload) return;
+    const opts = {};
+    if (typeof payload.bookIndex === 'number') opts.bookIndex = payload.bookIndex;
+    openPanel(payload.code, opts);
   });
 
   // Escape key closes panel

@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { ZONES } from '../config.js';
+import { getHoveredMesh } from '../utils/raycaster.js';
 
 // ─── Zone accent palette — each zone gets a distinct primary color ────────────
 // Cohesive Editorial Green family, each shifted to convey zone identity
@@ -25,6 +26,15 @@ const welcomeOrbs = [];
 
 // Track soulprint incense flames for flicker animation
 const soulprintFlames = [];
+
+// Track library books for hover-lift animation
+const libraryBooks = [];
+
+// Color names for the 5 library books — must match bookColors order below
+const LIBRARY_BOOK_NAMES = ['red', 'blue', 'green', 'gold', 'purple'];
+export function getLibraryBookName(index) {
+  return LIBRARY_BOOK_NAMES[index] || '';
+}
 
 /** WELCOME — large sign board on two posts + portrait frame + floating orbs */
 function buildWelcome(zone) {
@@ -234,14 +244,23 @@ function buildLibrary(zone) {
     group.add(div);
   });
 
-  // Colored book boxes on top
+  // Colored book boxes on top — interactive, individually trackable via bookIndex
   const bookColors = [0xc84040, 0x4080c8, 0x40c870, 0xc8a840, 0x9040c8];
   bookColors.forEach((color, i) => {
     const book = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.7, 0.8), mat(color));
-    book.position.set(-2 + i * 1.0, 3.35, 0);
-    book.userData = { zoneCode: zone.code, zoneName: zone.name, interactive: true };
+    const baseY = 3.35;
+    book.position.set(-2 + i * 1.0, baseY, 0);
+    book.userData = {
+      zoneCode: zone.code,
+      zoneName: zone.name,
+      interactive: true,
+      bookIndex: i,
+      baseY,
+      liftT: 0, // 0..1 lift progress
+    };
     book.castShadow = true;
     group.add(book);
+    libraryBooks.push(book);
   });
 
   return group;
@@ -362,6 +381,17 @@ export function updateZones(zoneGroups, time) {
     const f = 0.85 + Math.sin(time * 12 + idx * 1.7) * 0.1 + Math.random() * 0.08;
     flame.scale.set(f, f, f);
   });
+
+  // Library books — lift the currently hovered book gently up by 0.2 units
+  const hovered = getHoveredMesh && getHoveredMesh();
+  for (let i = 0; i < libraryBooks.length; i++) {
+    const book = libraryBooks[i];
+    const ud = book.userData;
+    const target = (book === hovered) ? 1 : 0;
+    // Lerp liftT toward target
+    ud.liftT += (target - ud.liftT) * 0.15;
+    book.position.y = ud.baseY + ud.liftT * 0.2;
+  }
 
   // Welcome orbs — slowly rotate around sign center + bob vertically
   welcomeOrbs.forEach(orb => {

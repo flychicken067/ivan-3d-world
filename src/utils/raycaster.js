@@ -60,10 +60,12 @@ export function initRaycaster(camera) {
     const intersects = raycaster.intersectObjects(interactiveMeshes, false);
     if (intersects.length > 0) {
       const hit = intersects[0].object;
-      const { zoneCode, zoneName } = hit.userData;
+      const { zoneCode, zoneName, bookIndex } = hit.userData;
       if (zoneCode) {
         playClick();
-        events.emit('zone:click', { code: zoneCode, name: zoneName });
+        const payload = { code: zoneCode, name: zoneName };
+        if (typeof bookIndex === 'number') payload.bookIndex = bookIndex;
+        events.emit('zone:click', payload);
       }
     }
   });

@@ -35,6 +35,7 @@ import { createButterflies, updateButterflies } from './world/butterflies.js';
 import { initShare } from './ui/share.js';
 import { initIdleScreensaver } from './idle-screensaver.js';
 import './visit-tracker.js';
+import { initAchievements } from './achievements.js';
 
 // Auto-enable reduce-motion if the OS-level preference is set and the user
 // has not explicitly chosen a value yet.
@@ -155,6 +156,20 @@ initSettings();
 initHomeButton();
 initIdleScreensaver();
 initStartParallax();
+initAchievements();
+
+// Returning visitor detection — adjust start screen primary CTA text
+try {
+  const sessionCount = parseInt(localStorage.getItem('ivan-world-session-count') || '0', 10) || 0;
+  const visitedRaw = localStorage.getItem('ivan-world-visited-zones') || '';
+  const isReturning = sessionCount > 1 || visitedRaw.trim().length > 0;
+  const tourBtn = document.getElementById('start-tour-btn');
+  if (tourBtn && isReturning) {
+    tourBtn.textContent = '▶ CONTINUE EXPLORING';
+  }
+  // Mark visited so future loads see it
+  localStorage.setItem('ivan-world-visited', '1');
+} catch (_) {}
 initShare({
   canvas,
   render: () => {

@@ -2,11 +2,13 @@
 // All prefs persisted to localStorage with key prefix "ivan-world-pref-".
 
 import { setWaypointsVisible } from '../world/paths.js';
+import { setAmbientPad } from '../audio.js';
 
 const PREFS = {
   'reduce-motion': { key: 'ivan-world-pref-reduce-motion', default: false },
   'show-compass':  { key: 'ivan-world-pref-show-compass', default: true },
   'show-waypoints':{ key: 'ivan-world-pref-show-waypoints', default: true },
+  'ambient-pad':   { key: 'ivan-world-pref-ambient-pad',   default: false },
 };
 
 function getPref(name) {
@@ -38,12 +40,14 @@ export function initSettings() {
   const cbReduce = document.getElementById('pref-reduce-motion');
   const cbCompass = document.getElementById('pref-show-compass');
   const cbWaypoints = document.getElementById('pref-show-waypoints');
+  const cbAmbient = document.getElementById('pref-ambient-pad');
   if (!btn || !panel) return;
 
   // Load initial values
   if (cbReduce) cbReduce.checked = getPref('reduce-motion');
   if (cbCompass) cbCompass.checked = getPref('show-compass');
   if (cbWaypoints) cbWaypoints.checked = getPref('show-waypoints');
+  if (cbAmbient) cbAmbient.checked = getPref('ambient-pad');
 
   // Apply on init
   applyCompassPref(getPref('show-compass'));
@@ -71,5 +75,9 @@ export function initSettings() {
   if (cbWaypoints) cbWaypoints.addEventListener('change', () => {
     setPref('show-waypoints', cbWaypoints.checked);
     applyWaypointsPref(cbWaypoints.checked);
+  });
+  if (cbAmbient) cbAmbient.addEventListener('change', () => {
+    setPref('ambient-pad', cbAmbient.checked);
+    try { setAmbientPad(cbAmbient.checked); } catch (_) {}
   });
 }

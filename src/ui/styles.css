@@ -1781,3 +1781,56 @@ canvas#world-canvas.debug-invert { filter: invert(1) hue-rotate(180deg); }
   from { transform: translateY(0) scale(1); opacity: 1; }
   to { transform: translateY(-12px) scale(0.97); opacity: 0; }
 }
+
+/* ─── Achievement toast ────────────────────────────────────────────────── */
+.achievement-toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translate(-50%, -16px);
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  background: rgba(20, 22, 18, 0.92);
+  border: 1px solid rgba(201, 169, 110, 0.5);
+  border-radius: 999px;
+  color: #efe7d3;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+.achievement-toast.visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+.achievement-toast .achievement-check {
+  color: #c9a96e;
+  font-weight: bold;
+}
+.achievement-toast .achievement-label {
+  opacity: 0.7;
+}
+.achievement-toast .achievement-sep {
+  opacity: 0.4;
+}
+.achievement-toast .achievement-name {
+  color: #c9a96e;
+  font-weight: 600;
+}
+
+/* Achievement count badge inside settings panel */
+.settings-panel .settings-badge {
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  opacity: 0.7;
+  letter-spacing: 0.05em;
+}
