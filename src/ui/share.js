@@ -18,6 +18,9 @@ export function initShare({ canvas, render } = {}) {
   if (!btn) return;
 
   btn.addEventListener('click', () => {
+    // Brief chromatic aberration flash during capture
+    canvas.classList.add('chromatic');
+    setTimeout(() => canvas.classList.remove('chromatic'), 350);
     try {
       // Force a fresh render so the most recent frame is in the canvas buffer
       // (WebGL canvases otherwise return blank when toDataURL is called late).

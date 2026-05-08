@@ -74,13 +74,16 @@ function buildWelcome(zone) {
     flatShading: true,
   });
   const orbConfigs = [
-    { radius: 3.2, height: 4.5, phase: 0,                size: 0.22 },
-    { radius: 3.6, height: 5.2, phase: (Math.PI * 2) / 3, size: 0.22 },
-    { radius: 3.4, height: 3.8, phase: (Math.PI * 4) / 3, size: 0.22 },
+    { radius: 3.2, height: 4.5, phase: 0,                size: 0.22, label: '60 DAYS' },
+    { radius: 3.6, height: 5.2, phase: (Math.PI * 2) / 3, size: 0.22, label: '6 PRODUCTS' },
+    { radius: 3.4, height: 3.8, phase: (Math.PI * 4) / 3, size: 0.22, label: '1 BOOK' },
   ];
   orbConfigs.forEach(cfg => {
-    const orb = new THREE.Mesh(new THREE.SphereGeometry(cfg.size, 12, 12), orbMat);
+    // Use a unique material per orb so hover-emissive doesn't bleed across all 3
+    const orb = new THREE.Mesh(new THREE.SphereGeometry(cfg.size, 12, 12), orbMat.clone());
     orb.userData.orbConfig = cfg;
+    orb.userData.interactive = true;
+    orb.userData.orbLabel = cfg.label;
     orb.position.set(Math.cos(cfg.phase) * cfg.radius, cfg.height, Math.sin(cfg.phase) * cfg.radius);
     group.add(orb);
     welcomeOrbs.push(orb);

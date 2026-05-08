@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { events } from '../events.js';
 import { playClick, playHover } from '../audio.js';
+import { showToast } from '../ui/toast.js';
 
 const raycaster = new THREE.Raycaster();
 const center = new THREE.Vector2(0, 0);
@@ -60,12 +61,15 @@ export function initRaycaster(camera) {
     const intersects = raycaster.intersectObjects(interactiveMeshes, false);
     if (intersects.length > 0) {
       const hit = intersects[0].object;
-      const { zoneCode, zoneName, bookIndex } = hit.userData;
+      const { zoneCode, zoneName, bookIndex, orbLabel } = hit.userData;
       if (zoneCode) {
         playClick();
         const payload = { code: zoneCode, name: zoneName };
         if (typeof bookIndex === 'number') payload.bookIndex = bookIndex;
         events.emit('zone:click', payload);
+      } else if (orbLabel) {
+        playClick();
+        try { showToast(orbLabel, { type: 'info', duration: 1800 }); } catch (_) {}
       }
     }
   });

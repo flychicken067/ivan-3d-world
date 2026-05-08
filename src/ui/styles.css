@@ -37,10 +37,30 @@
   --space-lg: 24px;
   --space-xl: 40px;
 
+  /* Border radius scale */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-pill: 999px;
+
   /* Transitions */
   --transition-fast: 150ms ease;
   --transition-base: 250ms ease;
   --transition-slow: 400ms ease;
+
+  /* Focus ring — used by all interactive elements */
+  --focus-ring: 0 0 0 2px rgba(184, 200, 160, 0.55);
+}
+
+/* --- Global focus-visible — keyboard-only outline for all interactive elements --- */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 /* --- Base Styles --- */
@@ -171,7 +191,7 @@ canvas#world-canvas {
   flex-wrap: wrap;
   padding: var(--space-sm) var(--space-md);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: rgba(13, 26, 13, 0.5);
 }
 
@@ -218,6 +238,9 @@ canvas#world-canvas {
 .start-action-btn.primary:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 18px rgba(201, 169, 110, 0.35);
+}
+.start-action-btn:active {
+  transform: translateY(0) scale(0.98);
 }
 
 .start-action-btn.secondary {
@@ -624,7 +647,7 @@ canvas#world-canvas {
   letter-spacing: 1.5px;
   text-transform: uppercase;
   padding: 3px 8px;
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
   border: 1px solid;
 }
 
@@ -689,7 +712,7 @@ canvas#world-canvas {
   transform: translateX(-50%);
   background: var(--bg-panel);
   border: 1px solid var(--border-strong);
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   padding: var(--space-md) var(--space-lg);
   pointer-events: auto;
   text-align: center;
@@ -823,6 +846,7 @@ canvas#world-canvas {
   transition: all var(--transition-fast);
 }
 .tour-stop:hover { color: var(--accent-green); border-color: var(--accent-green); }
+.tour-stop:active, .tour-skip:active, .tour-prev:active { transform: translateY(1px); }
 .tour-skip {
   border-color: var(--accent-gold);
   color: var(--accent-gold);
@@ -1012,7 +1036,7 @@ canvas#world-canvas {
   transform: translate(-50%, -50%);
   background: var(--bg-panel);
   border: 1px solid var(--accent-gold);
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   padding: var(--space-lg);
   z-index: 250;
   text-align: center;
@@ -1102,6 +1126,7 @@ canvas#world-canvas {
   color: var(--accent-green);
   border-color: var(--border-strong);
 }
+.audio-toggle:active { transform: translateY(1px); }
 
 /* --- Share Button --- */
 .share-btn {
@@ -1126,6 +1151,7 @@ canvas#world-canvas {
   color: var(--accent-gold);
   border-color: var(--border-strong);
 }
+.share-btn:active { transform: translateY(1px); }
 @media (pointer: coarse) {
   .share-btn { top: calc(var(--space-lg) + 36px); right: 56px; }
 }
@@ -1604,6 +1630,7 @@ canvas#world-canvas {
   border-color: var(--accent-green);
   background: rgba(13, 26, 13, 0.85);
 }
+.home-btn:active { transform: translateY(1px); }
 @media (pointer: coarse) {
   .home-btn { display: none; }
 }
@@ -1668,7 +1695,7 @@ canvas#world-canvas {
   max-width: 480px;
   background: var(--bg-panel);
   border: 1px solid var(--border-strong);
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   padding: var(--space-xl) var(--space-lg);
   text-align: left;
 }
@@ -1732,6 +1759,13 @@ body:has(#nav-overlay:not(.hidden)) .world-credits,
 body:has(#tour-narration:not(.hidden)) .world-credits,
 body:has(#tutorial:not(.hidden)) .world-credits {
   opacity: 0;
+}
+
+/* --- Chromatic aberration — applied during intense moments (tour fly,
+       screenshot capture, easter egg trigger). Subtle RGB split via drop-shadows. */
+canvas#world-canvas.chromatic {
+  filter: drop-shadow(2px 0 0 rgba(255, 0, 0, 0.1)) drop-shadow(-2px 0 0 rgba(0, 255, 255, 0.1));
+  transition: filter 200ms ease;
 }
 
 /* --- Easter Egg: Konami Debug Mode --- */

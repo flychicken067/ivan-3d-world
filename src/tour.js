@@ -75,6 +75,7 @@ export function prevToZone() {
 }
 
 function skipToNext() {
+  completeTypewriter();
   if (currentTimeout) {
     clearTimeout(currentTimeout);
     currentTimeout = null;
@@ -86,13 +87,50 @@ function skipToNext() {
   }
 }
 
+let typewriterTimer = null;
+
+function isReduceMotion() {
+  try {
+    return localStorage.getItem('ivan-world-pref-reduce-motion') === '1';
+  } catch (_) { return false; }
+}
+
+function completeTypewriter() {
+  if (typewriterTimer) {
+    clearInterval(typewriterTimer);
+    typewriterTimer = null;
+  }
+  if (textEl && textEl.dataset.fullText !== undefined) {
+    textEl.textContent = textEl.dataset.fullText;
+  }
+}
+
 function showNarration(zone, index, total) {
   ensureDom();
   if (!narrationEl) return;
   narrationEl.classList.remove('hidden');
   if (progressEl) progressEl.textContent = `${index + 1}/${total}`;
   if (zoneNameEl) zoneNameEl.textContent = zone.name;
-  if (textEl) textEl.textContent = NARRATION[zone.code] || '';
+  const fullText = NARRATION[zone.code] || '';
+  if (!textEl) return;
+  textEl.dataset.fullText = fullText;
+  // Cancel any in-flight typewriter from a previous zone
+  if (typewriterTimer) { clearInterval(typewriterTimer); typewriterTimer = null; }
+  if (isReduceMotion() || !fullText) {
+    textEl.textContent = fullText;
+    return;
+  }
+  // Typewriter: ~30ms per char
+  textEl.textContent = '';
+  let i = 0;
+  typewriterTimer = setInterval(() => {
+    i++;
+    textEl.textContent = fullText.slice(0, i);
+    if (i >= fullText.length) {
+      clearInterval(typewriterTimer);
+      typewriterTimer = null;
+    }
+  }, 30);
 }
 
 function hideNarration() {
@@ -105,6 +143,8 @@ function flyTo(zone) {
     const controls = getControls();
     if (!controls) { resolve(); return; }
     const cam = controls.object;
+    const canvasEl = document.getElementById('world-canvas');
+    if (canvasEl) canvasEl.classList.add('chromatic');
     const startX = cam.position.x;
     const startY = cam.position.y;
     const startZ = cam.position.z;
@@ -120,7 +160,11 @@ function flyTo(zone) {
     const startTime = performance.now();
 
     function tick(now) {
-      if (!active) { resolve(); return; }
+      if (!active) {
+        if (canvasEl) canvasEl.classList.remove('chromatic');
+        resolve();
+        return;
+      }
       const elapsed = now - startTime;
       const raw = Math.min(elapsed / FLY_DURATION, 1);
       const t = raw < 0.5
@@ -140,6 +184,7 @@ function flyTo(zone) {
       } else {
         cam.position.y = targetY;
         currentRAF = null;
+        if (canvasEl) canvasEl.classList.remove('chromatic');
         resolve();
       }
     }
@@ -255,6 +300,7 @@ export function stopTour() {
 
   if (currentRAF) { cancelAnimationFrame(currentRAF); currentRAF = null; }
   if (currentTimeout) { clearTimeout(currentTimeout); currentTimeout = null; }
+  if (typewriterTimer) { clearInterval(typewriterTimer); typewriterTimer = null; }
 
   if (escListener) {
     window.removeEventListener('keydown', escListener);

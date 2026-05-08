@@ -54,7 +54,10 @@ function triggerDebugMode() {
   debugActive = true;
   try { events.emit('easter:konami'); } catch (e) {}
   const canvas = document.getElementById('world-canvas');
-  if (canvas) canvas.classList.add('debug-invert');
+  if (canvas) {
+    canvas.classList.add('debug-invert');
+    canvas.classList.add('chromatic');
+  }
 
   const label = document.createElement('div');
   label.className = 'debug-mode-label';
@@ -62,7 +65,10 @@ function triggerDebugMode() {
   document.body.appendChild(label);
 
   setTimeout(() => {
-    if (canvas) canvas.classList.remove('debug-invert');
+    if (canvas) {
+      canvas.classList.remove('debug-invert');
+      canvas.classList.remove('chromatic');
+    }
     label.remove();
     debugActive = false;
   }, 3000);
