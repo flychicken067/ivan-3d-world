@@ -1,6 +1,8 @@
 import { ZONES, CAMERA } from '../config.js';
 import { getControls } from '../controls/camera.js';
 import { startTourMaybeResume } from '../tour.js';
+import { getVisitedZones } from '../visit-tracker.js';
+import { events } from '../events.js';
 
 const minimapEl = document.getElementById('minimap');
 let flyRAF = null;
@@ -78,6 +80,18 @@ export function initMinimap() {
     }
 
     flyRAF = requestAnimationFrame(tick);
+  });
+
+  // Initial visited state + listen for updates
+  refreshVisited();
+  events.on('visit:update', refreshVisited);
+}
+
+function refreshVisited() {
+  const visited = getVisitedZones();
+  const items = minimapEl.querySelectorAll('.minimap-item');
+  items.forEach(item => {
+    item.classList.toggle('visited', visited.has(item.dataset.zone));
   });
 }
 

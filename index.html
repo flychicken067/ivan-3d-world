@@ -14,6 +14,21 @@
 </head>
 <body>
   <canvas id="world-canvas"></canvas>
+  <div id="webgl-fallback" class="webgl-fallback hidden">
+    <div class="webgl-fallback-card">
+      <div class="webgl-fallback-eyebrow">UNSUPPORTED BROWSER</div>
+      <h1 class="webgl-fallback-title">This world needs WebGL.</h1>
+      <p class="webgl-fallback-body">
+        Your browser doesn't seem to support WebGL, or it's been disabled.
+        Ivan's World is a 3D experience and needs it to render.
+      </p>
+      <p class="webgl-fallback-body">
+        Try a recent version of Chrome, Firefox, Safari, or Edge — and make sure hardware acceleration is on.
+      </p>
+      <a class="webgl-fallback-link" href="https://get.webgl.org/" target="_blank" rel="noopener">Learn more &rsaquo;</a>
+    </div>
+  </div>
+  <div id="world-credits" class="world-credits">Built with three.js + Claude Code &middot; 2026</div>
   <div id="world-loader" class="world-loader">
     <div class="loader-content">
       <div class="loader-title">IVAN'S WORLD</div>

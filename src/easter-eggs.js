@@ -42,7 +42,48 @@ function showCredits() {
   });
 }
 
+// --- Konami code: ↑ ↑ ↓ ↓ ← → ← → B A ---
+const KONAMI = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+let konamiBuffer = [];
+let debugActive = false;
+
+function triggerDebugMode() {
+  if (debugActive) return;
+  debugActive = true;
+  const canvas = document.getElementById('world-canvas');
+  if (canvas) canvas.classList.add('debug-invert');
+
+  const label = document.createElement('div');
+  label.className = 'debug-mode-label';
+  label.textContent = 'DEBUG MODE';
+  document.body.appendChild(label);
+
+  setTimeout(() => {
+    if (canvas) canvas.classList.remove('debug-invert');
+    label.remove();
+    debugActive = false;
+  }, 3000);
+}
+
+function initKonami() {
+  window.addEventListener('keydown', (e) => {
+    const expected = KONAMI[konamiBuffer.length];
+    const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    if (key === expected) {
+      konamiBuffer.push(key);
+      if (konamiBuffer.length === KONAMI.length) {
+        konamiBuffer = [];
+        triggerDebugMode();
+      }
+    } else {
+      // Restart sequence; allow first key to start a new attempt
+      konamiBuffer = (key === KONAMI[0]) ? [key] : [];
+    }
+  });
+}
+
 export function initEasterEggs() {
+  initKonami();
   const canvas = document.getElementById('world-canvas');
   if (!canvas) return;
 

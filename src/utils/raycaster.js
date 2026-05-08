@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { events } from '../events.js';
-import { playClick } from '../audio.js';
+import { playClick, playHover } from '../audio.js';
 
 const raycaster = new THREE.Raycaster();
 const center = new THREE.Vector2(0, 0);
@@ -43,7 +43,10 @@ export function updateHover(camera) {
   const hit = intersects.length > 0 ? intersects[0].object : null;
   if (hit !== currentlyHovered) {
     if (currentlyHovered) clearHover(currentlyHovered);
-    if (hit) applyHover(hit);
+    if (hit) {
+      applyHover(hit);
+      playHover(); // subtle blip on transition into a new interactive
+    }
     currentlyHovered = hit;
     const crosshair = document.querySelector('.crosshair');
     if (crosshair) crosshair.classList.toggle('hover-interactive', !!hit);

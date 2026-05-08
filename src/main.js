@@ -30,6 +30,7 @@ import { initSettings } from './ui/settings.js';
 import { initHomeButton } from './ui/home-button.js';
 import { createButterflies, updateButterflies } from './world/butterflies.js';
 import { initShare } from './ui/share.js';
+import './visit-tracker.js';
 
 // Auto-enable reduce-motion if the OS-level preference is set and the user
 // has not explicitly chosen a value yet.
@@ -46,7 +47,32 @@ if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
 const REDUCE_MOTION = typeof localStorage !== 'undefined'
   && localStorage.getItem('ivan-world-pref-reduce-motion') === '1';
 
+// --- WebGL support detection ---
+function isWebGLAvailable() {
+  try {
+    if (typeof window === 'undefined') return false;
+    if (!window.WebGLRenderingContext) return false;
+    const test = document.createElement('canvas');
+    return !!(test.getContext('webgl') || test.getContext('experimental-webgl'));
+  } catch (_) {
+    return false;
+  }
+}
+
 const canvas = document.getElementById('world-canvas');
+
+if (!isWebGLAvailable()) {
+  // Hide canvas and loader, show fallback
+  if (canvas) canvas.style.display = 'none';
+  const loader = document.getElementById('world-loader');
+  if (loader) loader.style.display = 'none';
+  const startScreen = document.getElementById('start-screen');
+  if (startScreen) startScreen.style.display = 'none';
+  const fallback = document.getElementById('webgl-fallback');
+  if (fallback) fallback.classList.remove('hidden');
+  throw new Error('WebGL not available — fallback shown.');
+}
+
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -148,20 +174,26 @@ window.addEventListener('resize', () => {
 
 // Render loop with delta time
 const clock = new THREE.Clock();
+let frameCount = 0;
 
 function animate() {
   requestAnimationFrame(animate);
+  frameCount++;
   const delta = clock.getDelta();
   updateMovement(delta);
 
   // Tween updates (Task 15)
   TWEEN.update();
 
-  // HUD zone indicator (Task 10)
-  updateHud(camera.position.x, camera.position.z);
+  // HUD zone indicator — every 3 frames
+  if (frameCount % 3 === 0) {
+    updateHud(camera.position.x, camera.position.z);
+  }
 
-  // Minimap active zone highlight (Task 11)
-  updateMinimap(getCurrentZone());
+  // Minimap active zone highlight — every 5 frames
+  if (frameCount % 5 === 0) {
+    updateMinimap(getCurrentZone());
+  }
 
   // Visual upgrades — animations & atmosphere
   const elapsed = clock.elapsedTime;
@@ -170,14 +202,18 @@ function animate() {
   updateAtmosphere(elapsed);
   updateSun(elapsed);
   updateSky(elapsed);
-  updateProximitySparkles(camera, zoneGroups);
+  if (frameCount % 2 === 0) {
+    updateProximitySparkles(camera, zoneGroups);
+  }
   if (!REDUCE_MOTION) updateButterflies(elapsed);
 
   // Hover detection on interactive meshes (center crosshair raycast)
   updateHover(camera);
 
-  // Compass needle update
-  updateCompass(camera);
+  // Compass needle update — every 2 frames
+  if (frameCount % 2 === 0) {
+    updateCompass(camera);
+  }
 
   // FPS-adaptive quality
   perfUpdate();

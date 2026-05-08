@@ -1,5 +1,7 @@
 import { ZONES, CAMERA } from './config.js';
 import { getControls } from './controls/camera.js';
+import { markAllVisited } from './visit-tracker.js';
+import { playTourComplete } from './audio.js';
 
 const NARRATION = {
   '01': '01 / WELCOME — The Builder Who Ships. Six products, forty thousand words, one book — all built in sixty days.',
@@ -182,6 +184,11 @@ async function runTour() {
   }
   // Tour completed normally — clear resume marker
   try { localStorage.removeItem(RESUME_KEY); } catch (e) {}
+  // Mark all zones as visited
+  try { markAllVisited(); } catch (e) {}
+
+  // Celebration arpeggio
+  try { playTourComplete(); } catch (e) {}
 
   // Celebration message — brief pause showing "Tour complete"
   if (textEl && progressEl && zoneNameEl) {

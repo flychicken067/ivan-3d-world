@@ -71,6 +71,47 @@ export function playZoneEnter() {
 }
 
 /**
+ * Subtle hover blip — much softer than click, used when crosshair enters
+ * an interactive mesh.
+ */
+export function playHover() {
+  if (!ctx || muted) return;
+  const osc = ctx.createOscillator();
+  osc.type = 'sine';
+  osc.frequency.value = 1320; // higher = softer "tick"
+
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.018, ctx.currentTime); // very quiet
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+
+  osc.connect(gain);
+  gain.connect(masterGain);
+  osc.start(ctx.currentTime);
+  osc.stop(ctx.currentTime + 0.06);
+}
+
+/**
+ * Tour completion chord — 3-note rising arpeggio
+ */
+export function playTourComplete() {
+  if (!ctx || muted) return;
+  const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
+  notes.forEach((freq, i) => {
+    const osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    const gain = ctx.createGain();
+    const t = ctx.currentTime + i * 0.12;
+    gain.gain.setValueAtTime(0.08, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+    osc.connect(gain);
+    gain.connect(masterGain);
+    osc.start(t);
+    osc.stop(t + 0.5);
+  });
+}
+
+/**
  * Toggle mute/unmute
  */
 export function toggleMute() {
