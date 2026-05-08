@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import * as TWEEN from '@tweenjs/tween.js';
 import { COLORS, CAMERA } from './config.js';
 import { createSky } from './world/sky.js';
 import { createTerrain } from './world/terrain.js';
@@ -11,6 +12,8 @@ import { setInteractiveMeshes, initRaycaster } from './utils/raycaster.js';
 import { updateHud, getCurrentZone } from './ui/hud.js';
 import { initMinimap, updateMinimap } from './ui/minimap.js';
 import { initOverlay } from './ui/overlay.js';
+import { initNav } from './ui/nav.js';
+import { initTutorial } from './ui/tutorial.js';
 
 const canvas = document.getElementById('world-canvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -53,6 +56,12 @@ initMinimap();
 // Panel overlay (Task 12)
 initOverlay();
 
+// Nav overlay (Task 13)
+initNav();
+
+// Tutorial overlay (Task 14)
+initTutorial();
+
 // Resize handler
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -67,6 +76,9 @@ function animate() {
   requestAnimationFrame(animate);
   const delta = clock.getDelta();
   updateMovement(delta);
+
+  // Tween updates (Task 15)
+  TWEEN.update();
 
   // HUD zone indicator (Task 10)
   updateHud(camera.position.x, camera.position.z);

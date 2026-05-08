@@ -1,5 +1,6 @@
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js';
 import { events } from '../events.js';
+import { isPanelOpen } from '../ui/overlay.js';
 
 let controls = null;
 
@@ -27,6 +28,10 @@ export function initCameraControls(camera, domElement) {
   });
 
   controls.addEventListener('unlock', () => {
+    // Re-show start screen only when no panel (or nav) is handling the unlock
+    if (!isPanelOpen() && startScreen && startScreen.style.display === 'none') {
+      startScreen.style.display = '';
+    }
     events.emit('controls:unlocked');
   });
 
