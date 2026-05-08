@@ -1071,6 +1071,33 @@ canvas#world-canvas {
   border-color: var(--border-strong);
 }
 
+/* --- Share Button --- */
+.share-btn {
+  position: absolute;
+  top: calc(var(--space-lg) + 72px);
+  right: var(--space-lg);
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 4px 10px;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+  z-index: 15;
+}
+.share-btn:hover {
+  color: var(--accent-gold);
+  border-color: var(--border-strong);
+}
+@media (pointer: coarse) {
+  .share-btn { top: calc(var(--space-lg) + 36px); right: 56px; }
+}
+
 /* --- Scrollbar Styling --- */
 ::-webkit-scrollbar {
   width: 4px;
