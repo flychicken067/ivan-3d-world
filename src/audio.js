@@ -5,6 +5,10 @@ let droneLfo = null;
 let muted = false;
 let initialized = false;
 
+// Ambient pad — 3 sine pads forming a major chord, very faint
+const padNodes = []; // {osc, gain, lfo, lfoGain}
+let padOn = false;
+
 const toggleBtn = document.getElementById('audio-toggle');
 
 /**
@@ -21,6 +25,12 @@ export function initAudio() {
   masterGain.connect(ctx.destination);
 
   // No ambient drone — too noisy. Only event-driven sounds (click, zone enter)
+
+  // Apply persisted ambient pad pref (default off)
+  try {
+    const want = localStorage.getItem('ivan-world-pref-ambient-pad') === '1';
+    if (want) setAmbientPad(true);
+  } catch (_) {}
 
   // Wire up toggle button
   if (toggleBtn) {
@@ -110,6 +120,60 @@ export function playTourComplete() {
     osc.stop(t + 0.5);
   });
 }
+
+/**
+ * Enable/disable subtle ambient pad layer (3 sine pads, very faint).
+ * Default OFF. Each pad is gain ~0.015 with slow LFO modulation.
+ */
+export function setAmbientPad(on) {
+  if (!ctx) {
+    // remember intent so caller can re-call after initAudio
+    padOn = !!on;
+    return;
+  }
+  if (on && !padNodes.length) {
+    const freqs = [220, 277.18, 329.63]; // A3, C#4, E4 (A major triad)
+    freqs.forEach((f, i) => {
+      const osc = ctx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.value = f;
+      const gain = ctx.createGain();
+      gain.gain.value = 0; // ramp in
+      // Slow LFO modulating the gain for movement
+      const lfo = ctx.createOscillator();
+      lfo.type = 'sine';
+      lfo.frequency.value = 0.05 + i * 0.013; // very slow, slightly different per pad
+      const lfoGain = ctx.createGain();
+      lfoGain.gain.value = 0.005; // tiny modulation depth
+      lfo.connect(lfoGain);
+      lfoGain.connect(gain.gain);
+      osc.connect(gain);
+      gain.connect(masterGain);
+      osc.start();
+      lfo.start();
+      // Fade in
+      gain.gain.setTargetAtTime(0.015, ctx.currentTime, 1.5);
+      padNodes.push({ osc, gain, lfo, lfoGain });
+    });
+    padOn = true;
+  } else if (!on && padNodes.length) {
+    // Fade out then stop
+    const t = ctx.currentTime;
+    padNodes.forEach(n => {
+      try { n.gain.gain.setTargetAtTime(0, t, 0.5); } catch (_) {}
+    });
+    const nodes = padNodes.splice(0, padNodes.length);
+    setTimeout(() => {
+      nodes.forEach(n => {
+        try { n.osc.stop(); } catch (_) {}
+        try { n.lfo.stop(); } catch (_) {}
+      });
+    }, 2000);
+    padOn = false;
+  }
+}
+
+export function isAmbientPadOn() { return padOn; }
 
 /**
  * Toggle mute/unmute

@@ -1,5 +1,6 @@
 // Hidden interactions — Trey Hollinger style.
 // Click the sky 7 times within 10 seconds → reveal credits.
+import { events } from './events.js';
 
 let skyClickCount = 0;
 let skyClickResetTimer = null;
@@ -27,6 +28,7 @@ const CREDITS_HTML = `
 function showCredits() {
   if (creditsShown) return;
   creditsShown = true;
+  try { events.emit('easter:credits'); } catch (e) {}
   const wrapper = document.createElement('div');
   wrapper.innerHTML = CREDITS_HTML;
   document.body.appendChild(wrapper.firstElementChild);
@@ -50,6 +52,7 @@ let debugActive = false;
 function triggerDebugMode() {
   if (debugActive) return;
   debugActive = true;
+  try { events.emit('easter:konami'); } catch (e) {}
   const canvas = document.getElementById('world-canvas');
   if (canvas) canvas.classList.add('debug-invert');
 

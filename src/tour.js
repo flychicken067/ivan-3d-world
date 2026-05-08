@@ -2,6 +2,7 @@ import { ZONES, CAMERA } from './config.js';
 import { getControls } from './controls/camera.js';
 import { markAllVisited } from './visit-tracker.js';
 import { playTourComplete } from './audio.js';
+import { events } from './events.js';
 
 const NARRATION = {
   '01': '01 / WELCOME — The Builder Who Ships. Six products, forty thousand words, one book — all built in sixty days.',
@@ -189,6 +190,7 @@ async function runTour() {
 
   // Celebration arpeggio
   try { playTourComplete(); } catch (e) {}
+  try { events.emit('tour:complete'); } catch (e) {}
 
   // Celebration message — brief pause showing "Tour complete"
   if (textEl && progressEl && zoneNameEl) {
