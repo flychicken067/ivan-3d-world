@@ -100,8 +100,13 @@ export function openPanel(zoneCode) {
 }
 
 export function closePanel() {
-  overlayEl.classList.add('hidden');
-  overlayEl.innerHTML = '';
+  // Animate out before hiding
+  overlayEl.classList.add('closing');
+  setTimeout(() => {
+    overlayEl.classList.remove('closing');
+    overlayEl.classList.add('hidden');
+    overlayEl.innerHTML = '';
+  }, 200);
 
   // Re-lock pointer to resume world navigation
   const controls = getControls();

@@ -1733,3 +1733,19 @@ canvas#world-canvas.debug-invert { filter: invert(1) hue-rotate(180deg); }
 .minimap-item.visited .mm-code {
   color: var(--accent-green);
 }
+
+/* Panel close animation */
+.panel-overlay.closing {
+  animation: panel-overlay-fade-out 200ms ease forwards;
+}
+.panel-overlay.closing .panel {
+  animation: panel-pop-out 200ms cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+@keyframes panel-overlay-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@keyframes panel-pop-out {
+  from { transform: translateY(0) scale(1); opacity: 1; }
+  to { transform: translateY(-12px) scale(0.97); opacity: 0; }
+}

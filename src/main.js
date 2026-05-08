@@ -30,6 +30,7 @@ import { initSettings } from './ui/settings.js';
 import { initHomeButton } from './ui/home-button.js';
 import { createButterflies, updateButterflies } from './world/butterflies.js';
 import { initShare } from './ui/share.js';
+import { initIdleScreensaver } from './idle-screensaver.js';
 import './visit-tracker.js';
 
 // Auto-enable reduce-motion if the OS-level preference is set and the user
@@ -147,6 +148,7 @@ initEasterEggs();
 initShortcuts();
 initSettings();
 initHomeButton();
+initIdleScreensaver();
 initShare({
   canvas,
   render: () => {

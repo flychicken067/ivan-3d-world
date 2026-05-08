@@ -22,7 +22,7 @@ export function initMinimap() {
   let html = '<div class="minimap-title">World Map</div>';
   ZONES.forEach(zone => {
     const color = ZONE_DOT_COLOR[zone.name] || '#8a9a7a';
-    html += `<div class="minimap-item" data-zone="${zone.code}"><span class="mm-dot" style="background:${color}"></span><span class="mm-code">${zone.code}</span><span class="mm-name">${zone.label}</span></div>`;
+    html += `<div class="minimap-item" data-zone="${zone.code}" style="--zone-color:${color}"><span class="mm-dot" style="background:${color}"></span><span class="mm-code">${zone.code}</span><span class="mm-name">${zone.label}</span><span class="mm-distance"></span></div>`;
   });
   html += '<div class="minimap-tour-btn" data-action="tour">Take the Tour</div>';
   minimapEl.innerHTML = html;
@@ -80,6 +80,26 @@ export function initMinimap() {
     }
 
     flyRAF = requestAnimationFrame(tick);
+  });
+
+  // Hover handlers — show distance + color glow
+  minimapEl.querySelectorAll('.minimap-item').forEach(item => {
+    item.addEventListener('mouseenter', () => {
+      const zone = ZONES.find(z => z.code === item.dataset.zone);
+      if (!zone) return;
+      const controls = getControls();
+      if (!controls) return;
+      const cam = controls.object;
+      const dx = zone.position.x - cam.position.x;
+      const dz = zone.position.z - cam.position.z;
+      const dist = Math.round(Math.sqrt(dx * dx + dz * dz));
+      const distEl = item.querySelector('.mm-distance');
+      if (distEl) distEl.textContent = `${dist}m`;
+      item.classList.add('hovered');
+    });
+    item.addEventListener('mouseleave', () => {
+      item.classList.remove('hovered');
+    });
   });
 
   // Initial visited state + listen for updates
