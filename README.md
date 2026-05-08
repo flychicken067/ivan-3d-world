@@ -96,6 +96,33 @@ Built by Ivan with [Claude Code](https://claude.com/claude-code) — a long, pat
 
 ---
 
+## Privacy
+
+This project stores nothing on a server. All preferences (audio toggle, motion sensitivity, achievements, visit log, journey time) live in your browser's `localStorage`. Clear site data to reset.
+
+No analytics. No cookies. No third-party scripts.
+
+## Browser support
+
+Tested:
+
+- Chrome / Edge 100+
+- Safari 16+ (incl. iOS)
+- Firefox 100+
+- WebGL required — graceful fallback page shown otherwise
+
+## Keyboard shortcuts
+
+| Key | Action |
+| --- | --- |
+| `WASD` / arrows | Move |
+| Mouse | Look |
+| Click | Interact with zone |
+| `Tab` | Toggle minimap |
+| `Esc` | Close menus / stop tour |
+| `?` | Shortcuts overlay |
+| `↑↑↓↓←→←→BA` | (try it) |
+
 ## License
 
-MIT
+MIT — see [LICENSE](./LICENSE)
