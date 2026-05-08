@@ -25,7 +25,10 @@ let zoneNameEl = null;
 let textEl = null;
 let stopBtn = null;
 let skipBtn = null;
+let prevBtn = null;
 let skipResolve = null; // resolves the wait() promise early
+let currentIndex = 0;
+let prevRequested = false;
 let escListener = null;
 let canvasListener = null;
 
@@ -38,6 +41,7 @@ function ensureDom() {
   textEl = narrationEl.querySelector('.tour-text');
   stopBtn = narrationEl.querySelector('.tour-stop');
   skipBtn = narrationEl.querySelector('.tour-skip');
+  prevBtn = narrationEl.querySelector('.tour-prev');
   if (stopBtn) {
     stopBtn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -50,6 +54,20 @@ function ensureDom() {
       skipToNext();
     });
   }
+  if (prevBtn) {
+    prevBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      prevToZone();
+    });
+  }
+}
+
+export function prevToZone() {
+  if (!active) return;
+  if (currentIndex <= 0) return;
+  prevRequested = true;
+  // Break out of current wait/fly so the loop can restart at the previous zone
+  skipToNext();
 }
 
 function skipToNext() {
@@ -129,16 +147,29 @@ function wait(ms) {
 
 async function runTour() {
   const total = ZONES.length;
-  for (let i = startIndex; i < total; i++) {
+  let i = startIndex;
+  while (i < total) {
     if (!active) return;
+    currentIndex = i;
     const zone = ZONES[i];
     // Save current zone as last viewed (for resume)
     try { localStorage.setItem(RESUME_KEY, String(i)); } catch (e) {}
     showNarration(zone, i, total);
     await flyTo(zone);
     if (!active) return;
+    if (prevRequested) {
+      prevRequested = false;
+      i = Math.max(0, i - 1);
+      continue;
+    }
     await wait(PAUSE_DURATION);
     if (!active) return;
+    if (prevRequested) {
+      prevRequested = false;
+      i = Math.max(0, i - 1);
+      continue;
+    }
+    i++;
   }
   // Tour completed normally — clear resume marker
   try { localStorage.removeItem(RESUME_KEY); } catch (e) {}

@@ -5,7 +5,7 @@ import { createSky, updateSky } from './world/sky.js';
 import { createProximitySparkles, updateProximitySparkles } from './world/proximity-sparkles.js';
 import { createTerrain } from './world/terrain.js';
 import { createVegetationInstanced } from './world/vegetation.js';
-import { createPaths } from './world/paths.js';
+import { createPaths, updatePaths } from './world/paths.js';
 import { createZones, getInteractiveMeshes, updateZones } from './world/zones.js';
 import { createAtmosphere, updateAtmosphere } from './world/atmosphere.js';
 import { initPostProcessing } from './postprocessing.js';
@@ -137,6 +137,7 @@ function animate() {
   // Visual upgrades — animations & atmosphere
   const elapsed = clock.elapsedTime;
   updateZones(zoneGroups, elapsed);
+  updatePaths(elapsed);
   updateAtmosphere(elapsed);
   updateSun(elapsed);
   updateSky(elapsed);

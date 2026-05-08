@@ -21,7 +21,16 @@ function dismiss() {
 
 function showTutorial() {
   tutorialEl.innerHTML = `
-    <div class="tutorial-keys">WASD Move · Mouse Look · Click Interact</div>
+    <div class="tutorial-eyebrow">CONTROLS</div>
+    <div class="tutorial-keys">
+      <span class="tutorial-key-group"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Move</span>
+      <span class="tutorial-sep">·</span>
+      <span class="tutorial-key-group"><kbd>Mouse</kbd> Look</span>
+      <span class="tutorial-sep">·</span>
+      <span class="tutorial-key-group"><kbd>Click</kbd> Interact</span>
+      <span class="tutorial-sep">·</span>
+      <span class="tutorial-key-group"><kbd>?</kbd> Help</span>
+    </div>
     <div class="tutorial-dismiss">Press any key to dismiss</div>
   `;
   tutorialEl.classList.remove('hidden');

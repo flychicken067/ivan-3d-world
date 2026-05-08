@@ -433,6 +433,23 @@ canvas#world-canvas {
   }
 }
 
+.panel-stripe {
+  width: 100%;
+  height: 4px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  flex-shrink: 0;
+}
+
+.panel-title {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 1.5rem;
+  color: var(--accent-cream);
+  line-height: 1.4;
+}
+
 .panel-header {
   display: flex;
   align-items: flex-start;
@@ -705,7 +722,31 @@ canvas#world-canvas {
   backdrop-filter: blur(10px);
   z-index: 50;
 }
+.tour-narration:not(.hidden) {
+  animation: tour-narration-pulse 1200ms ease-out 1, panel-overlay-fade 240ms ease;
+}
 .tour-narration.hidden { display: none; }
+
+@keyframes tour-narration-pulse {
+  0%   { border-color: var(--border-strong); box-shadow: 0 0 0 transparent; }
+  35%  { border-color: var(--accent-gold);   box-shadow: 0 0 18px rgba(201, 169, 110, 0.45); }
+  100% { border-color: var(--border-strong); box-shadow: 0 0 0 transparent; }
+}
+
+.tour-prev {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--text-muted);
+  padding: 6px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.tour-prev:hover { color: var(--accent-green); border-color: var(--accent-green); }
 
 .tour-progress {
   font-family: var(--mono);
@@ -955,6 +996,23 @@ canvas#world-canvas {
 .tour-resume-btn.start-over:hover {
   color: var(--accent-green);
   border-color: var(--accent-green);
+}
+
+/* --- Version Tag --- */
+.version-tag {
+  position: absolute;
+  top: calc(var(--space-lg) - 14px);
+  right: var(--space-lg);
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 14;
+}
+@media (pointer: coarse) {
+  .version-tag { display: none; }
 }
 
 /* --- Audio Toggle --- */
@@ -1305,4 +1363,49 @@ canvas#world-canvas {
   border-radius: 3px;
   padding: 2px 6px;
   font-family: var(--mono);
+}
+
+/* Better tutorial styles — match shortcut overlay aesthetic */
+.tutorial-overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.tutorial-eyebrow {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  letter-spacing: 3px;
+  color: var(--accent-gold);
+  margin-bottom: var(--space-xs);
+}
+.tutorial-keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  align-items: center;
+  justify-content: center;
+}
+.tutorial-key-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+.tutorial-key-group kbd {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  border-radius: 3px;
+  padding: 2px 6px;
+  margin-right: 4px;
+  color: var(--accent-cream);
+}
+.tutorial-key-group kbd:last-of-type { margin-right: 6px; }
+.tutorial-sep {
+  color: var(--border-strong);
+  font-size: 0.7rem;
 }

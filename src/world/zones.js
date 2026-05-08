@@ -20,7 +20,10 @@ function mat(color, flat = true) {
 
 // ─── Zone builders ────────────────────────────────────────────────────────────
 
-/** WELCOME — large sign board on two posts */
+// Track welcome zone orbs for animation
+const welcomeOrbs = [];
+
+/** WELCOME — large sign board on two posts + portrait frame + floating orbs */
 function buildWelcome(zone) {
   const group = new THREE.Group();
 
@@ -37,6 +40,37 @@ function buildWelcome(zone) {
     post.position.set(x, 1.75, 0);
     post.castShadow = true;
     group.add(post);
+  });
+
+  // Portrait frame — dark frame above the sign (banner-style)
+  const frameOuter = new THREE.Mesh(new THREE.BoxGeometry(2.4, 1.6, 0.25), mat(0x2a1f15));
+  frameOuter.position.set(0, 6.0, 0.15);
+  frameOuter.castShadow = true;
+  group.add(frameOuter);
+
+  // Cream interior (procedural placeholder for portrait/avatar)
+  const frameInner = new THREE.Mesh(new THREE.BoxGeometry(2.0, 1.2, 0.1), mat(0xefe7d3));
+  frameInner.position.set(0, 6.0, 0.32);
+  group.add(frameInner);
+
+  // 3 floating gold orbs — "60 days, 6 products, 1 book"
+  const orbMat = new THREE.MeshLambertMaterial({
+    color: 0xc9a96e,
+    emissive: 0xc9a96e,
+    emissiveIntensity: 0.6,
+    flatShading: true,
+  });
+  const orbConfigs = [
+    { radius: 3.2, height: 4.5, phase: 0,                size: 0.22 },
+    { radius: 3.6, height: 5.2, phase: (Math.PI * 2) / 3, size: 0.22 },
+    { radius: 3.4, height: 3.8, phase: (Math.PI * 4) / 3, size: 0.22 },
+  ];
+  orbConfigs.forEach(cfg => {
+    const orb = new THREE.Mesh(new THREE.SphereGeometry(cfg.size, 12, 12), orbMat);
+    orb.userData.orbConfig = cfg;
+    orb.position.set(Math.cos(cfg.phase) * cfg.radius, cfg.height, Math.sin(cfg.phase) * cfg.radius);
+    group.add(orb);
+    welcomeOrbs.push(orb);
   });
 
   return group;
@@ -244,12 +278,22 @@ export function createZones(scene) {
   return groups;
 }
 
-// Animate zone buildings — gentle floating bob
+// Animate zone buildings — gentle floating bob + welcome orbs orbit/bob
 export function updateZones(zoneGroups, time) {
   zoneGroups.forEach((group, i) => {
     // Each zone bobs at slightly different phase
     const phase = i * 1.2;
     group.position.y = Math.sin(time * 0.5 + phase) * 0.15;
+  });
+
+  // Welcome orbs — slowly rotate around sign center + bob vertically
+  welcomeOrbs.forEach(orb => {
+    const cfg = orb.userData.orbConfig;
+    if (!cfg) return;
+    const angle = cfg.phase + time * 0.3;
+    orb.position.x = Math.cos(angle) * cfg.radius;
+    orb.position.z = Math.sin(angle) * cfg.radius;
+    orb.position.y = cfg.height + Math.sin(time * 1.2 + cfg.phase) * 0.25;
   });
 }
 

@@ -34,6 +34,9 @@ function createPathSegment(from, to) {
   return mesh;
 }
 
+// Track waypoint dots for pulsing animation
+const waypointDots = [];
+
 export function createPaths(scene) {
   CONNECTIONS.forEach(([i, j]) => {
     const from = ZONES[i].position;
@@ -41,4 +44,22 @@ export function createPaths(scene) {
     const segment = createPathSegment(from, to);
     scene.add(segment);
   });
+
+  // Gold waypoint dots — one per zone, slightly raised
+  const dotGeo = new THREE.SphereGeometry(0.45, 14, 14);
+  const dotMat = new THREE.MeshBasicMaterial({ color: 0xc9a96e });
+  ZONES.forEach(zone => {
+    const dot = new THREE.Mesh(dotGeo, dotMat);
+    dot.position.set(zone.position.x, 0.25, zone.position.z);
+    scene.add(dot);
+    waypointDots.push(dot);
+  });
+}
+
+// Pulse the waypoint dots — subtle scale animation
+export function updatePaths(time) {
+  for (let i = 0; i < waypointDots.length; i++) {
+    const s = 1 + Math.sin(time * 1.6 + i * 0.6) * 0.18;
+    waypointDots[i].scale.set(s, s, s);
+  }
 }

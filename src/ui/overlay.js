@@ -4,8 +4,20 @@ import { getControls } from '../controls/camera.js';
 
 const overlayEl = document.getElementById('panel-overlay');
 
+// Zone code → accent stripe color
+const ZONE_STRIPE = {
+  '01': '#4a6a3a',
+  '02': '#6a4a2a',
+  '03': '#8a7438',
+  '04': '#4a3a6a',
+  '05': '#6a3838',
+  '06': '#2a5c7a',
+  '07': '#7a3838',
+};
+
 function renderPanel(zone) {
   const { content } = zone;
+  const stripeColor = ZONE_STRIPE[zone.code] || '#4a6a3a';
 
   // Build tag HTML
   const tagHtml = content.tag
@@ -37,6 +49,7 @@ function renderPanel(zone) {
 
   return `
     <div class="panel">
+      <div class="panel-stripe" style="background:${stripeColor}"></div>
       <div class="panel-header">
         <div>
           <div class="panel-eyebrow">${content.eyebrow || ''}</div>
@@ -44,7 +57,7 @@ function renderPanel(zone) {
         <button class="panel-close" id="panel-close-btn">ESC</button>
       </div>
       <div class="panel-body">
-        <h3>${content.title || ''}</h3>
+        <h3 class="panel-title">${content.title || ''}</h3>
         <hr class="panel-divider" />
         <p>${content.body || ''}</p>
         ${tagHtml}
