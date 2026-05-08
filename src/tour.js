@@ -107,6 +107,12 @@ function flyTo(zone) {
     const targetX = zone.position.x;
     const targetY = CAMERA.height;
     const targetZ = zone.position.z + zone.radius + 3;
+    // Capture starting rotation and reset target — face toward zone (negative Z direction)
+    const startRotY = cam.rotation.y;
+    const startRotX = cam.rotation.x;
+    cam.rotation.order = 'YXZ';
+    const targetRotY = 0; // facing -Z (toward zone)
+    const targetRotX = 0; // level
     const startTime = performance.now();
 
     function tick(now) {
@@ -117,6 +123,9 @@ function flyTo(zone) {
         ? 4 * raw * raw * raw
         : 1 - Math.pow(-2 * raw + 2, 3) / 2;
 
+      // Lerp rotation back to a neutral facing
+      cam.rotation.y = startRotY + (targetRotY - startRotY) * t;
+      cam.rotation.x = startRotX + (targetRotX - startRotX) * t;
       cam.position.x = startX + (targetX - startX) * t;
       cam.position.z = startZ + (targetZ - startZ) * t;
       const baseY = startY + (targetY - startY) * t;
