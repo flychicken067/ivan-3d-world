@@ -91,16 +91,10 @@ export function updateMovement(delta) {
   const controls = getControls();
   const isTouchDevice = 'ontouchstart' in window;
   if (!controls) return;
-  // On touch devices allow movement without pointer lock
   if (!isTouchDevice && !controls.isLocked) return;
 
   const camera = controls.object;
-  const speed = CAMERA.moveSpeed * 60;
-  const damping = 8.0 * delta;
-
-  // Apply damping
-  velocity.x -= velocity.x * damping;
-  velocity.z -= velocity.z * damping;
+  const speed = 35; // units per second — fast traversal across 200-unit world
 
   // Build input direction
   let dirX = 0;
@@ -110,27 +104,32 @@ export function updateMovement(delta) {
   if (keys.a) dirX -= 1;
   if (keys.d) dirX += 1;
 
-  // Apply touch joystick input if nonzero
+  // Apply touch joystick input
   const touchInput = getTouchInput();
   if (touchInput.x !== 0 || touchInput.z !== 0) {
     dirX += touchInput.x;
     dirZ += touchInput.z;
   }
 
-  // Normalize if diagonal
+  // Normalize diagonal
   const len = Math.sqrt(dirX * dirX + dirZ * dirZ);
   if (len > 0) {
     dirX /= len;
     dirZ /= len;
   }
 
-  // Accumulate velocity
-  velocity.x += dirX * speed * delta;
-  velocity.z += dirZ * speed * delta;
+  // Smooth velocity with lerp (not double-delta)
+  const accel = 10; // how fast velocity reaches target
+  const targetX = dirX * speed;
+  const targetZ = dirZ * speed;
+  velocity.x += (targetX - velocity.x) * Math.min(accel * delta, 1);
+  velocity.z += (targetZ - velocity.z) * Math.min(accel * delta, 1);
 
-  // Move using PointerLockControls helpers
-  controls.moveRight(velocity.x * delta);
-  controls.moveForward(-velocity.z * delta);
+  // Apply movement — single delta
+  const moveX = velocity.x * delta;
+  const moveZ = velocity.z * delta;
+  controls.moveRight(moveX);
+  controls.moveForward(-moveZ);
 
   // Clamp to world bounds
   const bound = WORLD.size / 2 - 5;

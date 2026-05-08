@@ -5,7 +5,9 @@ import { createSky } from './world/sky.js';
 import { createTerrain } from './world/terrain.js';
 import { createVegetationInstanced } from './world/vegetation.js';
 import { createPaths } from './world/paths.js';
-import { createZones, getInteractiveMeshes } from './world/zones.js';
+import { createZones, getInteractiveMeshes, updateZones } from './world/zones.js';
+import { createAtmosphere, updateAtmosphere } from './world/atmosphere.js';
+import { initPostProcessing } from './postprocessing.js';
 import { initCameraControls } from './controls/camera.js';
 import { initMovement, updateMovement, initTouchControls } from './controls/movement.js';
 import { setInteractiveMeshes, initRaycaster } from './utils/raycaster.js';
@@ -20,7 +22,7 @@ const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setClearColor(COLORS.bgDeep);
-renderer.shadowMap.enabled = true;
+// shadowMap disabled — not needed for Low Poly flat-shading style, saves GPU
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(CAMERA.fov, window.innerWidth / window.innerHeight, CAMERA.near, CAMERA.far);
@@ -31,8 +33,12 @@ const ambient = new THREE.AmbientLight(0xffffff, 0.6);
 scene.add(ambient);
 const directional = new THREE.DirectionalLight(0xffffff, 0.8);
 directional.position.set(50, 80, 30);
-directional.castShadow = true;
+// castShadow disabled for performance
 scene.add(directional);
+
+// Fog — atmospheric depth, hides world edges
+scene.fog = new THREE.FogExp2(0xb8d4a8, 0.018);
+renderer.setClearColor(0xb8d4a8); // match fog color for seamless horizon
 
 // World
 createSky(scene);
@@ -41,6 +47,10 @@ createVegetationInstanced(scene);
 createPaths(scene);
 const zoneGroups = createZones(scene);
 const interactiveMeshes = getInteractiveMeshes(zoneGroups);
+createAtmosphere(scene);
+
+// Post-processing pipeline (bloom, tone mapping, vignette)
+const composer = initPostProcessing(renderer, scene, camera);
 
 // Controls
 initCameraControls(camera, document.body);
@@ -68,6 +78,7 @@ window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
+  composer.setSize(window.innerWidth, window.innerHeight);
 });
 
 // Render loop with delta time
@@ -87,7 +98,12 @@ function animate() {
   // Minimap active zone highlight (Task 11)
   updateMinimap(getCurrentZone());
 
-  renderer.render(scene, camera);
+  // Visual upgrades — animations & atmosphere
+  const elapsed = clock.elapsedTime;
+  updateZones(zoneGroups, elapsed);
+  updateAtmosphere(elapsed);
+
+  composer.render();
 }
 animate();
 

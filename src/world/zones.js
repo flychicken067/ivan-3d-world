@@ -232,6 +232,15 @@ export function createZones(scene) {
   return groups;
 }
 
+// Animate zone buildings — gentle floating bob
+export function updateZones(zoneGroups, time) {
+  zoneGroups.forEach((group, i) => {
+    // Each zone bobs at slightly different phase
+    const phase = i * 1.2;
+    group.position.y = Math.sin(time * 0.5 + phase) * 0.15;
+  });
+}
+
 export function getInteractiveMeshes(zoneGroups) {
   const meshes = [];
   zoneGroups.forEach(group => {
