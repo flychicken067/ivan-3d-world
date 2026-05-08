@@ -56,6 +56,12 @@ export function createPaths(scene) {
   });
 }
 
+export function setWaypointsVisible(visible) {
+  for (let i = 0; i < waypointDots.length; i++) {
+    waypointDots[i].visible = visible;
+  }
+}
+
 // Pulse the waypoint dots — subtle scale animation
 export function updatePaths(time) {
   for (let i = 0; i < waypointDots.length; i++) {

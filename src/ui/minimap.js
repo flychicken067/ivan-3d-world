@@ -5,10 +5,22 @@ import { startTourMaybeResume } from '../tour.js';
 const minimapEl = document.getElementById('minimap');
 let flyRAF = null;
 
+// Zone accent colors (mirrors src/world/zones.js ZONE_ACCENT)
+const ZONE_DOT_COLOR = {
+  WELCOME:     '#4a6a3a',
+  PROJECTS:    '#6a4a2a',
+  SOULPRINT:   '#8a7438',
+  THEATER:     '#4a3a6a',
+  LIBRARY:     '#6a3838',
+  SOCIAL:      '#2a5c7a',
+  COLLABORATE: '#7a3838',
+};
+
 export function initMinimap() {
   let html = '<div class="minimap-title">World Map</div>';
   ZONES.forEach(zone => {
-    html += `<div class="minimap-item" data-zone="${zone.code}"><span class="mm-code">${zone.code}</span><span class="mm-name">${zone.label}</span></div>`;
+    const color = ZONE_DOT_COLOR[zone.name] || '#8a9a7a';
+    html += `<div class="minimap-item" data-zone="${zone.code}"><span class="mm-dot" style="background:${color}"></span><span class="mm-code">${zone.code}</span><span class="mm-name">${zone.label}</span></div>`;
   });
   html += '<div class="minimap-tour-btn" data-action="tour">Take the Tour</div>';
   minimapEl.innerHTML = html;

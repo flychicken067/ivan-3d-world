@@ -34,9 +34,17 @@
     <div id="zone-splash" class="zone-splash hidden">
       <div class="zone-splash-code"></div>
       <div class="zone-splash-name"></div>
+      <div class="zone-splash-time"></div>
     </div>
     <div class="version-tag desktop-only">v0.2 &middot; 60 days &middot; 2026</div>
     <button id="audio-toggle" class="audio-toggle">SOUND ON</button>
+    <button id="settings-toggle" class="settings-toggle" aria-label="Settings">⚙</button>
+    <div id="settings-panel" class="settings-panel hidden">
+      <div class="settings-title">Preferences</div>
+      <label class="settings-row"><input type="checkbox" id="pref-reduce-motion"> <span>Reduce motion</span></label>
+      <label class="settings-row"><input type="checkbox" id="pref-show-compass" checked> <span>Show compass</span></label>
+      <label class="settings-row"><input type="checkbox" id="pref-show-waypoints" checked> <span>Show waypoints</span></label>
+    </div>
     <div class="help-hint desktop-only">Press <kbd>?</kbd> for shortcuts</div>
     <div id="compass" class="compass" aria-hidden="true">
       <div class="compass-ring">

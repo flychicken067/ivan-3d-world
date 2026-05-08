@@ -26,6 +26,7 @@ import { initLoader } from './ui/loader.js';
 import { initCompass, updateCompass } from './ui/compass.js';
 import { initEasterEggs } from './easter-eggs.js';
 import { initShortcuts } from './ui/shortcuts.js';
+import { initSettings } from './ui/settings.js';
 
 const canvas = document.getElementById('world-canvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -99,6 +100,7 @@ initLoader();
 initCompass();
 initEasterEggs();
 initShortcuts();
+initSettings();
 
 // Audio — init on first user click (browser autoplay policy)
 document.addEventListener('click', function startAudio() {

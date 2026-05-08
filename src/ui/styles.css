@@ -327,6 +327,15 @@ canvas#world-canvas {
   transition: background var(--transition-fast);
 }
 
+.minimap-item .mm-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+  flex-shrink: 0;
+}
+
 .minimap-item .mm-code {
   font-family: var(--mono);
   font-size: 0.6rem;
@@ -530,25 +539,32 @@ canvas#world-canvas {
   align-items: center;
   justify-content: center;
   font-family: var(--mono);
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 1.5px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 1.8px;
   text-transform: uppercase;
   text-decoration: none;
   color: var(--bg-deep);
-  background: var(--accent-green);
-  border: 1px solid var(--accent-green);
+  background: var(--accent-gold);
+  border: 1px solid var(--accent-gold);
   border-radius: 4px;
-  padding: 8px 18px;
+  padding: 9px 20px;
   cursor: pointer;
-  transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+  transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
   white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(201, 169, 110, 0.18);
 }
 
 .btn-primary:hover {
   background: var(--accent-cream);
   border-color: var(--accent-cream);
   color: var(--bg-deep);
+  transform: translateY(-1px) scale(1.03);
+  box-shadow: 0 6px 18px rgba(201, 169, 110, 0.4);
+}
+
+.btn-primary:active {
+  transform: translateY(0) scale(0.99);
 }
 
 .btn-ghost {
@@ -556,25 +572,31 @@ canvas#world-canvas {
   align-items: center;
   justify-content: center;
   font-family: var(--mono);
-  font-size: 0.7rem;
-  font-weight: 400;
-  letter-spacing: 1.5px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 1.8px;
   text-transform: uppercase;
   text-decoration: none;
   color: var(--text-secondary);
   background: transparent;
   border: 1px solid var(--border-strong);
   border-radius: 4px;
-  padding: 8px 18px;
+  padding: 9px 20px;
   cursor: pointer;
-  transition: color var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
+  transition: color var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
   white-space: nowrap;
 }
 
 .btn-ghost:hover {
-  color: var(--text-primary);
+  color: var(--bg-deep);
   border-color: var(--accent-green);
-  background: var(--bg-hover);
+  background: var(--accent-green);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(184, 200, 160, 0.3);
+}
+
+.btn-ghost:active {
+  transform: translateY(0);
 }
 
 /* --- Tags --- */
@@ -891,6 +913,15 @@ canvas#world-canvas {
   font-size: 1.5rem;
   color: var(--accent-cream);
   margin-top: var(--space-md);
+}
+
+.zone-splash-time {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 1.5px;
+  color: var(--accent-gold);
+  opacity: 0.7;
+  margin-top: var(--space-xs);
 }
 
 @keyframes zone-splash-fade {
@@ -1408,4 +1439,86 @@ canvas#world-canvas {
 .tutorial-sep {
   color: var(--border-strong);
   font-size: 0.7rem;
+}
+
+/* ============================================================
+   SETTINGS — gear button + preferences panel (top-right)
+   ============================================================ */
+.settings-toggle {
+  position: absolute;
+  top: calc(var(--space-lg) + 36px);
+  right: var(--space-lg);
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  line-height: 1;
+  color: var(--text-muted);
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+  z-index: 15;
+}
+
+.settings-toggle:hover {
+  color: var(--accent-green);
+  border-color: var(--border-strong);
+  transform: rotate(45deg);
+}
+
+.settings-panel {
+  position: absolute;
+  top: calc(var(--space-lg) + 72px);
+  right: var(--space-lg);
+  width: 200px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: var(--space-sm) var(--space-md);
+  pointer-events: auto;
+  z-index: 16;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+}
+
+.settings-title {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: var(--space-xs);
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  padding: 4px 2px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.settings-row input[type="checkbox"] {
+  cursor: pointer;
+  accent-color: var(--accent-green);
+}
+
+.settings-row:hover {
+  color: var(--text-primary);
+}
+
+@media (pointer: coarse) {
+  .settings-toggle { top: var(--space-lg); }
+  .settings-panel { top: calc(var(--space-lg) + 36px); }
 }

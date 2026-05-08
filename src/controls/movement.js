@@ -5,6 +5,7 @@ import { isTourActive } from '../tour.js';
 
 const keys = { w: false, a: false, s: false, d: false };
 const velocity = { x: 0, z: 0 };
+let walkPhase = 0;
 
 // Touch joystick state
 const touch = { joystickActive: false, startX: 0, startY: 0, moveX: 0, moveZ: 0 };
@@ -140,6 +141,13 @@ export function updateMovement(delta) {
   camera.position.x = Math.max(-bound, Math.min(bound, camera.position.x));
   camera.position.z = Math.max(-bound, Math.min(bound, camera.position.z));
 
-  // Lock Y (eye height)
-  camera.position.y = CAMERA.height;
+  // Lock Y (eye height) — with optional head-bob during walk
+  const reduceMotion = typeof localStorage !== 'undefined' && localStorage.getItem('ivan-world-pref-reduce-motion') === '1';
+  const moving = (Math.abs(velocity.x) + Math.abs(velocity.z)) > 0.5;
+  if (moving && !reduceMotion && !isTourActive() && !isFlying()) {
+    walkPhase += delta * 8;
+    camera.position.y = CAMERA.height + Math.sin(walkPhase) * 0.05;
+  } else {
+    camera.position.y = CAMERA.height;
+  }
 }

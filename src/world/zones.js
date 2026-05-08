@@ -280,7 +280,12 @@ export function createZones(scene) {
 
 // Animate zone buildings — gentle floating bob + welcome orbs orbit/bob
 export function updateZones(zoneGroups, time) {
+  const reduceMotion = typeof localStorage !== 'undefined' && localStorage.getItem('ivan-world-pref-reduce-motion') === '1';
   zoneGroups.forEach((group, i) => {
+    if (reduceMotion) {
+      group.position.y = 0;
+      return;
+    }
     // Each zone bobs at slightly different phase
     const phase = i * 1.2;
     group.position.y = Math.sin(time * 0.5 + phase) * 0.15;

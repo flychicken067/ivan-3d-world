@@ -3,9 +3,18 @@ import { events } from '../events.js';
 const el = document.getElementById('zone-splash');
 const codeEl = el ? el.querySelector('.zone-splash-code') : null;
 const nameEl = el ? el.querySelector('.zone-splash-name') : null;
+const timeEl = el ? el.querySelector('.zone-splash-time') : null;
 
 let lastShownAt = 0;
 let hideTimeout = null;
+
+function formatTime(d) {
+  let h = d.getHours();
+  const m = d.getMinutes();
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')} ${ampm}`;
+}
 
 events.on('zone:enter', ({ code, name }) => {
   if (!el || !codeEl || !nameEl) return;
@@ -16,6 +25,7 @@ events.on('zone:enter', ({ code, name }) => {
 
   codeEl.textContent = code;
   nameEl.textContent = name;
+  if (timeEl) timeEl.textContent = formatTime(new Date());
   el.classList.remove('hidden');
   // restart animation
   el.classList.remove('show');
