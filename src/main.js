@@ -7,6 +7,10 @@ import { createPaths } from './world/paths.js';
 import { createZones, getInteractiveMeshes } from './world/zones.js';
 import { initCameraControls } from './controls/camera.js';
 import { initMovement, updateMovement } from './controls/movement.js';
+import { setInteractiveMeshes, initRaycaster } from './utils/raycaster.js';
+import { updateHud, getCurrentZone } from './ui/hud.js';
+import { initMinimap, updateMinimap } from './ui/minimap.js';
+import { initOverlay } from './ui/overlay.js';
 
 const canvas = document.getElementById('world-canvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -39,6 +43,16 @@ const interactiveMeshes = getInteractiveMeshes(zoneGroups);
 initCameraControls(camera, document.body);
 initMovement();
 
+// Raycaster (Task 9)
+setInteractiveMeshes(interactiveMeshes);
+initRaycaster(camera);
+
+// Minimap (Task 11)
+initMinimap();
+
+// Panel overlay (Task 12)
+initOverlay();
+
 // Resize handler
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -53,6 +67,13 @@ function animate() {
   requestAnimationFrame(animate);
   const delta = clock.getDelta();
   updateMovement(delta);
+
+  // HUD zone indicator (Task 10)
+  updateHud(camera.position.x, camera.position.z);
+
+  // Minimap active zone highlight (Task 11)
+  updateMinimap(getCurrentZone());
+
   renderer.render(scene, camera);
 }
 animate();
