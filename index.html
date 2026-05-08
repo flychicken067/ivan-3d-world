@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ivan's World</title>
+  <link rel="stylesheet" href="/src/ui/styles.css">
+</head>
+<body>
+  <canvas id="world-canvas"></canvas>
+  <div id="ui-layer">
+    <div id="hud-zone" class="hud" aria-live="polite"></div>
+    <div id="minimap" class="minimap"></div>
+    <div id="nav-overlay" class="nav-overlay hidden"></div>
+    <div id="panel-overlay" class="panel-overlay hidden"></div>
+    <div id="tutorial" class="tutorial-overlay hidden"></div>
+  </div>
+  <div id="start-screen" class="start-screen">
+    <div class="start-content">
+      <h1 class="display-title">IVAN'S WORLD</h1>
+      <p class="start-sub">Click to enter</p>
+    </div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
