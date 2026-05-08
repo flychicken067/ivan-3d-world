@@ -1896,3 +1896,38 @@ canvas#world-canvas.debug-invert { filter: invert(1) hue-rotate(180deg); }
   opacity: 0.85;
   text-transform: uppercase;
 }
+
+/* Zone panel "Up next" hint */
+.panel-up-next {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 12px 24px;
+  text-align: left;
+  font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--accent-cream, #d8cfa8);
+  opacity: 0.55;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: opacity 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+.panel-up-next:hover {
+  opacity: 1;
+  color: var(--accent-gold, #f5c542);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* Start screen live clock */
+.start-clock {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  letter-spacing: 1px;
+  text-align: center;
+  margin: -6px 0 10px 0;
+  opacity: 0.4;
+  text-transform: uppercase;
+}

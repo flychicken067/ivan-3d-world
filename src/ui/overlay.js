@@ -2,6 +2,13 @@ import { ZONES } from '../config.js';
 import { events } from '../events.js';
 import { getControls } from '../controls/camera.js';
 import { getLibraryBookName } from '../world/zones.js';
+import { flyToZone } from './minimap.js';
+
+function getNextZone(zoneCode) {
+  const idx = ZONES.findIndex(z => z.code === zoneCode);
+  if (idx < 0) return null;
+  return ZONES[(idx + 1) % ZONES.length];
+}
 
 const overlayEl = document.getElementById('panel-overlay');
 
@@ -120,6 +127,11 @@ function renderPanel(zone, opts = {}) {
         ${sessionHtml}
       </div>
       ${buttonsHtml.length ? `<div class="panel-footer">${buttonsHtml}</div>` : ''}
+      ${(() => {
+        const next = getNextZone(zone.code);
+        if (!next) return '';
+        return `<button class="panel-up-next" data-up-next="${next.code}" type="button">→ Up next: ${next.code} ${next.name}</button>`;
+      })()}
     </div>`;
 }
 
@@ -139,6 +151,16 @@ export function openPanel(zoneCode, opts = {}) {
   // Wire close button
   const closeBtn = document.getElementById('panel-close-btn');
   if (closeBtn) closeBtn.addEventListener('click', closePanel);
+
+  // Wire "Up next" hint — close panel and fly to the suggested zone
+  const upNextBtn = overlayEl.querySelector('.panel-up-next');
+  if (upNextBtn) {
+    upNextBtn.addEventListener('click', () => {
+      const nextCode = upNextBtn.dataset.upNext;
+      closePanel();
+      try { flyToZone(nextCode); } catch (_) {}
+    });
+  }
 }
 
 export function closePanel() {

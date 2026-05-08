@@ -369,7 +369,7 @@ export function updateZones(zoneGroups, time) {
     }
     // Each zone bobs at slightly different phase
     const phase = i * 1.2;
-    group.position.y = Math.sin(time * 0.5 + phase) * 0.15;
+    group.position.y = Math.sin(time * 0.5 + phase) * 0.06;
   });
 
   // Soulprint incense flames — random flicker scale

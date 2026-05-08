@@ -40,6 +40,7 @@ import './visit-tracker.js';
 import { initVisitLog } from './visit-log.js';
 import { initAchievements } from './achievements.js';
 import { showToast } from './ui/toast.js';
+import { initStartClock } from './ui/start-clock.js';
 
 // Auto-enable reduce-motion if the OS-level preference is set and the user
 // has not explicitly chosen a value yet.
@@ -227,6 +228,9 @@ try {
     startContent.insertBefore(line, startActions);
   }
 } catch (_) { /* ignore */ }
+
+// Init the start-screen live clock (shown below the WHAT'S NEW line).
+try { initStartClock(); } catch (_) { /* ignore */ }
 
 // Total-time tracker: increment localStorage value each frame while the world
 // is active (start screen dismissed). Capped per-tick to avoid huge jumps.

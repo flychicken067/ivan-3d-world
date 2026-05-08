@@ -3,6 +3,7 @@ import { getControls } from './controls/camera.js';
 import { markAllVisited } from './visit-tracker.js';
 import { playTourComplete } from './audio.js';
 import { events } from './events.js';
+import { burstConfetti } from './ui/confetti.js';
 
 const NARRATION = {
   '01': '01 / WELCOME — The Builder Who Ships. Six products, forty thousand words, one book — all built in sixty days.',
@@ -191,6 +192,19 @@ async function runTour() {
   // Celebration arpeggio
   try { playTourComplete(); } catch (e) {}
   try { events.emit('tour:complete'); } catch (e) {}
+
+  // Brief confetti burst from the bottom-center of the tour narration.
+  try {
+    const narration = document.getElementById('tour-narration');
+    let ox = window.innerWidth / 2;
+    let oy = window.innerHeight - 80;
+    if (narration) {
+      const r = narration.getBoundingClientRect();
+      ox = r.left + r.width / 2;
+      oy = r.bottom;
+    }
+    burstConfetti(ox, oy);
+  } catch (e) {}
 
   // Celebration message — brief pause showing "Tour complete"
   if (textEl && progressEl && zoneNameEl) {

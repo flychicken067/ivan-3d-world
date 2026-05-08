@@ -82,6 +82,14 @@ There are a few. They reward curiosity, not cleverness — most reveal themselve
 
 ---
 
+## Documentation
+
+- [DEPLOY.md](./DEPLOY.md) — production deployment notes (Vercel + manual builds).
+- [CHANGELOG.md](./CHANGELOG.md) — release history and feature waves.
+- [CONTRIBUTING.md](./CONTRIBUTING.md) — local setup, coding conventions, PR flow.
+
+---
+
 ## Credits
 
 Built by Ivan with [Claude Code](https://claude.com/claude-code) — a long, patient collaboration across many sessions of polish.
