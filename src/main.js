@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import { COLORS, CAMERA } from './config.js';
 import { createSky } from './world/sky.js';
 import { createTerrain } from './world/terrain.js';
+import { createVegetation } from './world/vegetation.js';
+import { createPaths } from './world/paths.js';
+import { createZones, getInteractiveMeshes } from './world/zones.js';
 import { initCameraControls } from './controls/camera.js';
 import { initMovement, updateMovement } from './controls/movement.js';
 
@@ -27,6 +30,10 @@ scene.add(directional);
 // World
 createSky(scene);
 createTerrain(scene);
+createVegetation(scene);
+createPaths(scene);
+const zoneGroups = createZones(scene);
+const interactiveMeshes = getInteractiveMeshes(zoneGroups);
 
 // Controls
 initCameraControls(camera, document.body);
@@ -50,4 +57,4 @@ function animate() {
 }
 animate();
 
-export { scene, camera, renderer };
+export { scene, camera, renderer, zoneGroups, interactiveMeshes };
